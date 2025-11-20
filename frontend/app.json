@@ -19,8 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.seagut20.frontend"
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
@@ -38,13 +37,6 @@
           "dark": {
             "backgroundColor": "#000000"
           }
-        }
-      ],
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsDownloadToken": "pk.eyJ1Ijoib3N1YXBwZGV2Y2x1YiIsImEiOiJjbWhjcm00dGkwN2N3Mmpwem5uMHA2aHUxIn0.NU7eDOQ_xGSKyr78ln5JtQ",
-          "RNMapboxMapsVersion": "11.0.0"
         }
       ]
     ],
