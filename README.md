@@ -8,3 +8,4 @@ Dylan Keyhantaj: Senior CS Student, interested in computer graphics and games. I
 Miles Chase: Freshman CS Student who likes to create things such as apps, websites, and films. He also likes to hike and do things outdoors. His origins are from around Beaverton Oregon.
 Jamie Murphy: Third-year CS student
 Kolton Evans - third year cs student who likes web dev and playing music
+Valerie Armstrong: Second year student in the post-bacc CS program. Interested in open-source and other public service projects.
