@@ -19,9 +19,13 @@
    ```
 
 3. **Start the app**
-
+   - Off Campus
    ```bash
    npx expo start
+   ```
+   - On Campus 
+   ```bash
+   npx expo start --tunnel
    ```
 
 Once these steps are complete, you can do one of the following to test the app:
