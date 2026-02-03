@@ -6,3 +6,4 @@ Sean Gutmann: Sophomore CS Student who likes to make mobile apps and ride his bi
 Sebastian Toresola: Senior CS Student incoming @ Netflix
 Dylan Keyhantaj: Senior CS Student, interested in computer graphics and games. I love coffee, cooking, and photography! 
 Miles Chase: Freshman CS Student who likes to create things such as apps, websites, and films. He also likes to hike and do things outdoors. His origins are from around Beaverton Oregon.
+Jamie Murphy: Third-year CS student
