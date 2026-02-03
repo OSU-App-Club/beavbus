@@ -11,3 +11,4 @@ Jamie Murphy: Third-year CS student
 Kolton Evans - third year cs student who likes web dev and playing music
 Valerie Armstrong: Second year student in the post-bacc CS program. Interested in open-source and other public service projects.
 Krishna Basavaraju: I'm a Freshman CS student who likes playing games, watching movies/shows, and coding
+Vivek Dixit: Freshman ECE Student
