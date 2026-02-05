@@ -12,3 +12,4 @@ Go to `frontend/README.md` for instructions on how to start the app.
  - Valerie Armstrong: Second year student in the post-bacc CS program. Interested in open-source and other public service projects.
  - Krishna Basavaraju: I'm a Freshman CS student who likes playing games, watching movies/shows, and coding
  - Vivek Dixit: Freshman ECE Student
+ - Jeremy Lammon: Sophomore Transfer CS student who enjoys making and playing games & apps.
