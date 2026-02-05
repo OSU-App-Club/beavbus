@@ -1,10 +1,69 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated } from "react-native-maps";
 import { useLocation } from "@/src/hooks";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
+
+  const [buses, setBuses] = useState<any[]>([]);
+  const busMarkerRef = useRef<any>(null);
+  const busCoord = useRef<any | null>(null);
+
+  // Initialize bus positions when location is available
+
+  useEffect(() => {
+    if (!location) return;
+    const initial = [
+      {
+        // Example Bus Location
+        id: "bus1",
+        coordinate: {
+          latitude: 44.5653355,
+          longitude: -123.284433,
+        },
+        heading: 0,
+      },
+    ];
+    setBuses(initial);
+    busCoord.current = new AnimatedRegion({
+      latitude: initial[0].coordinate.latitude,
+      longitude: initial[0].coordinate.longitude,
+      latitudeDelta: 0,
+      longitudeDelta: 0,
+    });
+  }, [location]);
+
+  // Bus Movement Animation
+
+  useEffect(() => {
+    if (!buses[0] || !busCoord.current) return;
+    if (busCoord.current.setValue) {
+      busCoord.current.setValue({
+        latitude: buses[0].coordinate.latitude,
+        longitude: buses[0].coordinate.longitude,
+        latitudeDelta: 0,
+        longitudeDelta: 0,
+      });
+    }
+  }, [buses]);
+
+  /* Update bus location example
+
+    setBuses((prev) =>
+      prev.map((bus) =>
+        bus.id === "bus1"
+          ? {
+              ...bus,
+              coordinate: {
+                latitude: newLat,
+                longitude: newLng,
+              },
+            }
+          : bus
+      )
+    );
+  */
 
   if (loading) {
     return (
@@ -43,7 +102,12 @@ export default function HomeScreen() {
         }}
         showsUserLocation={true}
         showsMyLocationButton={true}
-      ></MapView>
+        showsTraffic={true}
+      >
+        {buses.map((bus) => (
+          <MarkerAnimated key={bus.id} ref={busMarkerRef} coordinate={busCoord.current} rotation={bus.heading} />
+        ))}
+      </MapView>
     </View>
   );
 }
