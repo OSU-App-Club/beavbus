@@ -4,12 +4,12 @@ import { typography } from "../constants";
 import { useTheme } from "@react-navigation/native";
 
 
-type ThemedTextProps = TextProps & { color?: string};
-export default function ThemedText({color, style, children, ...rest}: ThemedTextProps) {
+type ThemedTextProps = TextProps & { variant?: "body" | "title" | "label", color?: string };
+export default function ThemedText({variant = 'body', color, style, children, ...rest}: ThemedTextProps) {
     const { colors } = useTheme();
     
     return (
-        <Text style={[styles.body, {color: color || colors.text}, style]} {...rest}>
+        <Text style={[styles[variant], {color: color || colors.text}, style]} {...rest}>
             {children}
         </Text>
     )
@@ -17,4 +17,6 @@ export default function ThemedText({color, style, children, ...rest}: ThemedText
 
 const styles = StyleSheet.create({
     body: {fontSize: typography.sizes.md, fontWeight: typography.weights.regular},
+    title: {fontSize: typography.sizes.lg, fontWeight: typography.weights.semibold},
+    label: {fontSize: typography.sizes.sm, fontWeight: typography.weights.regular},
 })
