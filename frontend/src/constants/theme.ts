@@ -6,18 +6,6 @@
 import { DefaultTheme, DarkTheme } from "@react-navigation/native";
 
 
-export const colors = {
-  // Brand colors
-  primary: "#cf7500ff",
-
-  // Status colors
-  success: "#1eff00ff",
-
-  // Neutral colors
-  white: "#ffffff",
-  whiteOverlay: "rgba(255, 255, 255, 0.2)",
-} as const;
-
 export const lightTheme = {
   ...DefaultTheme,
   colors: {
@@ -35,7 +23,7 @@ export const darkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: "#000000",
+    background: "#272727",
     text: "#ffffff",
     card: "#1c1c1c",
     primary: '#cf7500ff',
@@ -76,10 +64,3 @@ export const typography = {
   },
 } as const;
 
-// Convenience export for the entire theme
-export const theme = {
-  colors,
-  spacing,
-  borderRadius,
-  typography,
-} as const;
