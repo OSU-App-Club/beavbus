@@ -3,6 +3,9 @@
  * Provides consistent styling across the application
  */
 
+import { DefaultTheme, DarkTheme } from "@react-navigation/native";
+
+
 export const colors = {
   // Brand colors
   primary: "#cf7500ff",
@@ -14,6 +17,32 @@ export const colors = {
   white: "#ffffff",
   whiteOverlay: "rgba(255, 255, 255, 0.2)",
 } as const;
+
+export const lightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "#ffffff",
+    text: "#000000",
+    card: "#f8f8f8",
+    primary: '#cf7500ff',
+    success: "#1eff00ff",
+    border: '#E0E0E0',
+  }
+}
+
+export const darkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: "#000000",
+    text: "#ffffff",
+    card: "#1c1c1c",
+    primary: '#cf7500ff',
+    success: "#1eff00ff",
+    border: '#333333',
+  }
+}
 
 export const spacing = {
   xs: 4,
