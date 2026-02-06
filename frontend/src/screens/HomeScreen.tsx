@@ -1,37 +1,39 @@
 import React from "react";
-import { View, StyleSheet, Text, Platform } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { useLocation } from "@/src/hooks";
+import ThemedView from "../components/ThemedView";
+import ThemedText from "../components/ThemedText";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Getting your location...</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Getting your location...</ThemedText>
+      </ThemedView>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Error: {error}</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Error: {error}</ThemedText>
+      </ThemedView>
     );
   }
 
   if (!location) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Unable to get location</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Unable to get location</ThemedText>
+      </ThemedView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <MapView
         style={styles.map}
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
@@ -44,18 +46,16 @@ export default function HomeScreen() {
         showsUserLocation={true}
         showsMyLocationButton={true}
       ></MapView>
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },
