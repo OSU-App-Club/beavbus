@@ -1,7 +1,8 @@
-import React from "react";
-import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { useLocation } from "@/src/hooks";
+import React from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import AlertsButton from "../components/AlertsButton";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
@@ -31,20 +32,23 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
-        initialRegion={{
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.025,
-          longitudeDelta: 0.025,
-        }}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-      ></MapView>
-    </View>
+    <>  
+      <AlertsButton />
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+          initialRegion={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.025,
+            longitudeDelta: 0.025,
+          }}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+        ></MapView>
+      </View>
+    </>
   );
 }
 
