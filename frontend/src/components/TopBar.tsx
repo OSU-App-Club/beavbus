@@ -1,6 +1,7 @@
 import { View, Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, borderRadius } from "../constants";
+import SearchBar from "./SearchBar";
 
 export default function TopBar() {
   const insets = useSafeAreaInsets();
@@ -12,6 +13,7 @@ export default function TopBar() {
         style={styles.logo}
         fadeDuration={0}
       />
+      <SearchBar />
     </View>
   );
 }
