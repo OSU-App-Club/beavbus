@@ -1,25 +1,19 @@
 import React from "react";
-import { View, StyleSheet, Text, Platform } from "react-native";
+import { StyleSheet } from "react-native";
+import ThemedText from "../components/ThemedText";
+import ThemedView from "../components/ThemedView";
 
 export default function SettingsScreen() {
     return (
-        <View style={styles.loadingContainer}>
-            <Text>Settings tab</Text>
-        </View>
+        <ThemedView style={styles.container}>
+            <ThemedText variant="title">Settings tab</ThemedText>
+        </ThemedView>
     )
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-  },
-  map: {
-    flex: 1,
   },
 });
