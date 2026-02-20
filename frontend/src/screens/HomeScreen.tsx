@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated } from "react-native-maps";
 import { useLocation } from "@/src/hooks";
+import AlertsButton from "../components/AlertsButton";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
@@ -116,30 +117,33 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
-        initialRegion={{
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.025,
-          longitudeDelta: 0.025,
-        }}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        showsTraffic={true}
-      >
-        {buses.map((bus) => (
-          <MarkerAnimated
-            key={bus.id}
-            coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-            rotation={bus.heading}
-            image={markerImg}
-          />
-        ))}
-      </MapView>
-    </View>
+    <>  
+      <AlertsButton />
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+          initialRegion={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.025,
+            longitudeDelta: 0.025,
+          }}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+          showsTraffic={true}
+        >
+          {buses.map((bus) => (
+            <MarkerAnimated
+              key={bus.id}
+              coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
+              rotation={bus.heading}
+              image={markerImg}
+            />
+          ))}
+        </MapView>
+      </View>
+    </>
   );
 }
 
