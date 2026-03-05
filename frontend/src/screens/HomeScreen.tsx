@@ -102,7 +102,7 @@ export default function HomeScreen() {
       <AlertsButton />
       <View style={styles.container}>
         {vehicles === null && (
-          <Text style={styles.warn}>No bus data available</Text>
+          <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
           style={styles.map}
