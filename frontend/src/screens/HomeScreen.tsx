@@ -159,7 +159,7 @@ export default function HomeScreen() {
               longitude: stop.longitude,
             }}
           >
-          <View
+          <ThemedView
              style={{
               width: 16,
               height: 16,
