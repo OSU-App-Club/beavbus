@@ -1,96 +1,76 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated } from "react-native-maps";
-import { useLocation } from "@/src/hooks";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline } from "react-native-maps";
+import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes, getCTSBusRoutes} from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
-
+  const { vehicles, refresh } = getBeavBusVehiclePositions();
+  const { routes } = getCTSBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
-  const markerImg = require('../assets/images/bus.png');
 
-  // Initialize bus positions when location is available
+  // Icon for each route
+  // const route54 = require('../assets/images/blue.png');
+  // const route49 = require('../assets/images/yellow.png');
+  // const route55 = require('../assets/images/green.png');
 
+  //Update routes
+  const drawableRoutes = (routes ?? [])
+  .map((route, index) => ({
+    key: `${route.Description}-${index}`,
+    color: route.MapLineColor || "#db0000",
+    coordinates: route.linePoints || [],
+  }))
+  .filter((r) => r.coordinates.length > 1);
+
+  // Update bus coordinates
   useEffect(() => {
-    if (!location) return;
-    const initial = [
-       // Example Bus Locations
-      {
-        id: "bus1",
-        coordinate: {
-          latitude: 44.5653355,
-          longitude: -123.284433,
-        },
-        heading: 0,
-      },
-      {
-        id: "bus2",
-        coordinate: {
-          latitude: 44.5653355,
-          longitude: -123.284433,
-        },
-        heading: 0,
-      },
-      {
-        id: "bus3",
-        coordinate: {
-          latitude: 44.5653355,
-          longitude: -123.284433,
-        },
-        heading: 0,
-      },
-    ];
-    setBuses(initial);
-    initial.forEach((b) => {
-      busCoordsRef.current[b.id] = new AnimatedRegion({
-        latitude: b.coordinate.latitude,
-        longitude: b.coordinate.longitude,
-        latitudeDelta: 0,
-        longitudeDelta: 0,
-      });
-    });
-  }, [location]);
+    if (!vehicles) return;
 
-  // animate AnimatedRegion values whenever buses change
-  useEffect(() => {
-    buses.forEach((bus) => {
-      const coord = busCoordsRef.current[bus.id];
-      if (coord && coord.timing) {
-        coord.timing({
-          latitude: bus.coordinate.latitude,
-          longitude: bus.coordinate.longitude,
-          latitudeDelta: 0,
-          longitudeDelta: 0,
-        }).start();
-      } else if (!coord) {
-        busCoordsRef.current[bus.id] = new AnimatedRegion({
-          latitude: bus.coordinate.latitude,
-          longitude: bus.coordinate.longitude,
+    const updatedBuses = vehicles.map(vehicle => {
+      const id = `bus${vehicle.VehicleID}`;
+      const routeId = vehicle.RouteID;
+
+      // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
+      
+      if (!busCoordsRef.current[id]) {
+        busCoordsRef.current[id] = new AnimatedRegion({
+          latitude: vehicle.Latitude,
+          longitude: vehicle.Longitude,
           latitudeDelta: 0,
           longitudeDelta: 0,
         });
+      } else {
+        busCoordsRef.current[id].timing({
+          latitude: vehicle.Latitude,
+          longitude: vehicle.Longitude,
+          latitudeDelta: 0,
+          longitudeDelta: 0,
+          duration: 500,
+          useNativeDriver: false,
+        }).start();
       }
-    });
-  }, [buses]);
-
-  // Simulate bus movement every second (for test purposes)
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setBuses((prev) =>
-      prev.map(bus => ({
-        ...bus,
+      return {
+        id,
+        routeId,
         coordinate: {
-          latitude: bus.coordinate.latitude + (Math.random() - 0.5) * 0.001,
-          longitude: bus.coordinate.longitude + (Math.random() - 0.5) * 0.001,
+          latitude: vehicle.Latitude,
+          longitude: vehicle.Longitude,
         },
-      }))
-      );
-    }, 1000);
-    return () => clearInterval(id);
-  }, [setBuses]);
+      };
+    });
+    setBuses(updatedBuses);
+  }, [vehicles]);
+
+  // Refresh bus positions every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh();
+    }, 500);
+    return () => clearInterval(interval);
+  }, [refresh]);
 
   if (loading) {
     return (
@@ -115,11 +95,13 @@ export default function HomeScreen() {
       </View>
     );
   }
-
   return (
     <>  
       <AlertsButton />
       <View style={styles.container}>
+        {vehicles === null && (
+          <Text style={styles.warn}>No bus data available</Text>
+        )}
         <MapView
           style={styles.map}
           provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
@@ -137,8 +119,14 @@ export default function HomeScreen() {
             <MarkerAnimated
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-              rotation={bus.heading}
-              image={markerImg}
+            />
+          ))}
+          {drawableRoutes.map((route) => (
+            <Polyline
+              key={route.key}
+              coordinates={route.coordinates}
+              strokeColor={route.color}
+              strokeWidth={4}
             />
           ))}
         </MapView>
@@ -160,5 +148,11 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  warn: {
+    fontSize: 18,
+    color: "red",
+    padding: 10,
+    borderRadius: 5,
   },
 });
