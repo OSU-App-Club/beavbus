@@ -1,6 +1,9 @@
 import React, {useState} from "react";
-import { View, StyleSheet, Text, Alert,Switch } from "react-native";
-import Toggle from "../components/Toggle";
+import { View, StyleSheet } from "react-native";
+import ThemedText from "../components/ThemedText";
+import ThemedView from "../components/ThemedView";
+import ThemedSwitch from "../components/ThemedSwitch";
+import { useTheme } from "@react-navigation/native";
 
 
 
@@ -15,67 +18,46 @@ export default function SettingsScreen() {
     const reportAnalytics = () => setToggle3(previousState => !previousState);
 
     return (
-        <View style={styles.container}>
+        <ThemedView style={styles.container}>
 
-            <Text style={styles.settings}>Notifications:</Text>
+            <ThemedText style={styles.settings} variant="title">Notifications:</ThemedText>
 
-            <Text>Notify me when bus is near saved stop</Text>
+            <ThemedText>Notify me when bus is near saved stop</ThemedText>
             <View style = {styles.toggles}>
-              <Switch
-                  trackColor={{ false: '#767577', true: '#cf7500ff' }}
-                  thumbColor={isToggle1enabled ? '#f4f3f4' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
+              <ThemedSwitch
                   onValueChange={busNearNotification}
                   value={isToggle1enabled}
-                  style={{transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }]}}
               />
             </View>
 
 
-            <Text>Notify me when there are delays</Text>
+            <ThemedText>Notify me when there are delays</ThemedText>
             <View style = {styles.toggles}>            
-              <Switch
-                  trackColor={{ false: '#767577', true: '#cf7500ff' }}
-                  thumbColor={isToggle2enabled ? '#f4f3f4' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
+              <ThemedSwitch
                   onValueChange={delaysNotification}
                   value={isToggle2enabled}
-                  style={{transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }]}}
               />
             </View>
 
 
-            <Text style={styles.settings}>Analytics:</Text>
+            <ThemedText style={styles.settings} variant="title">Analytics:</ThemedText>
 
-            <Text>Report my usage to Google Analytics</Text>
+            <ThemedText>Report my usage to Google Analytics</ThemedText>
             <View style = {styles.toggles}>
-              <Switch
-                  trackColor={{ false: '#767577', true: '#cf7500ff' }}
-                  thumbColor={isToggle3enabled ? '#f4f3f4' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
+              <ThemedSwitch
                   onValueChange={reportAnalytics}
                   value={isToggle3enabled}
-                  style={{transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }]}}
               />
             </View>
 
-        </View>
+        </ThemedView>
     )
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
     textAlign: "left",
     padding: 20,
-    fontWeight: "bold",
-  },
-
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
   },
 
   toggles: {
@@ -84,9 +66,6 @@ const styles = StyleSheet.create({
   },
 
   settings: {
-    fontWeight: "bold",
-    fontSize: 24,
-    fontFamily: 'ui-rounded',
     paddingBottom: 10,
   }
 });
