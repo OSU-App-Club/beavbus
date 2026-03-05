@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, Platform } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline } from "react-native-maps";
 import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes} from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
+import ThemedView from "../components/ThemedView";
+import ThemedText from "../components/ThemedText";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
@@ -74,25 +76,25 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Getting your location...</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Getting your location...</ThemedText>
+      </ThemedView>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Error: {error}</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Error: {error}</ThemedText>
+      </ThemedView>
     );
   }
 
   if (!location) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Unable to get location</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Unable to get location</ThemedText>
+      </ThemedView>
     );
   }
   return (
@@ -139,11 +141,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },

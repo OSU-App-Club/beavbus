@@ -1,4 +1,4 @@
-import { ActivityIndicator, View, StyleSheet } from "react-native";
+import { ActivityIndicator, View, StyleSheet, useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
@@ -7,8 +7,12 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import { store, persistor } from "./store/store";
 import { RootNavigator } from "./navigation";
+import { darkTheme, lightTheme } from "./constants";
 
 export default function App() {
+  const scheme = useColorScheme();
+  const theme = scheme === "dark" ? darkTheme : lightTheme;
+
   return (
     <Provider store={store}>
       <PersistGate
@@ -20,7 +24,7 @@ export default function App() {
         persistor={persistor}
       >
         <SafeAreaProvider>
-          <NavigationContainer>
+          <NavigationContainer theme={theme}>
             <StatusBar style="auto" />
             <RootNavigator />
           </NavigationContainer>
