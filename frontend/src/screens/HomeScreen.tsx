@@ -1,10 +1,18 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Marker} from "react-native-maps";
 import { useLocation } from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
+
+//Temp mocked stops until we utilize API data
+const mockStops = [
+  { id: "1", latitude: 44.5650, longitude: -123.2780 },
+  { id: "2", latitude: 44.5635, longitude: -123.2755 },
+  { id: "3", latitude: 44.5620, longitude: -123.2730 },
+];
+
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
@@ -142,6 +150,26 @@ export default function HomeScreen() {
               rotation={bus.heading}
               image={markerImg}
             />
+          ))}
+          {mockStops.map((stop) => (
+          <Marker
+            key={stop.id}
+            coordinate={{
+              latitude: stop.latitude,
+              longitude: stop.longitude,
+            }}
+          >
+          <ThemedView
+             style={{
+              width: 16,
+              height: 16,
+              borderRadius: 8,
+              backgroundColor: "rgb(219, 104, 10)",
+              borderWidth: 1.5,
+              borderColor: "black",
+              }}
+            />
+          </Marker>
           ))}
         </MapView>
       </View>
