@@ -39,7 +39,8 @@ interface Stop {
     RouteStopID: number,
     SecondsAtStop: number,
     SecodnsToNextStop: number,
-    SignVerbiage: string
+    SignVerbiage: string,
+    color?: string
 }
 
 interface Route {
@@ -68,17 +69,19 @@ interface Vehicle {
 
 interface BeavBusRoutesResult {
     routes: Route[] | null,
+    stops: Stop[] | null,
     error: string | null;
     loading: boolean;
     refresh: () => Promise<void>;
 }
 
-export function getBeavBusRoutes(): BeavBusRoutesResult {
+export function getBeavBusRoutesAndStops(): BeavBusRoutesResult {
     const [routes, setRoutes] = useState<Route[] | null>(null);
+    const [stops, setStops] = useState<Stop[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const getBeavBusRoutes = async () => {
+    const getBeavBusRoutesAndStops = async () => {
         try {
             setLoading(true);
             setError(null);
@@ -96,6 +99,14 @@ export function getBeavBusRoutes(): BeavBusRoutesResult {
 
             setRoutes(routesWithLines);
 
+            const stopsWithColors: Stop[] = data.flatMap(route => (
+                route.Stops.map(stop => ({
+                    ...stop,
+                    color: route.MapLineColor
+                }))
+            ))
+            setStops(stopsWithColors)
+
         }   catch (err) {
             setError(err instanceof Error ? err.message : "Failed to get location");
         } finally {
@@ -104,14 +115,15 @@ export function getBeavBusRoutes(): BeavBusRoutesResult {
     };
 
     useEffect(() => {
-        getBeavBusRoutes();
+        getBeavBusRoutesAndStops();
     }, []);
 
     return {
         routes,
+        stops,
         error,
         loading,
-        refresh: getBeavBusRoutes,
+        refresh: getBeavBusRoutesAndStops,
     }
 }
 

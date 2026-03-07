@@ -1,23 +1,15 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Text, Platform } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Marker, Polyline } from "react-native-maps";
-import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes } from "@/src/hooks";
+import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutesAndStops } from "@/src/hooks";
+import { ThemedText, ThemedView } from "../components"
 import AlertsButton from "../components/AlertsButton";
-import ThemedView from "../components/ThemedView";
-import ThemedText from "../components/ThemedText";
-
-//Temp mocked stops until we utilize API data
-const mockStops = [
-  { id: "1", latitude: 44.5650, longitude: -123.2780 },
-  { id: "2", latitude: 44.5635, longitude: -123.2755 },
-  { id: "3", latitude: 44.5620, longitude: -123.2730 },
-];
-
+import { borderRadius, spacing } from "../constants";
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
   const { vehicles, refresh } = getBeavBusVehiclePositions();
-  const { routes } = getBeavBusRoutes();
+  const { routes, stops } = getBeavBusRoutesAndStops();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
@@ -130,6 +122,7 @@ export default function HomeScreen() {
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
               image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
+              zIndex={10}
             />
           ))}
           {drawableRoutes.map((route) => (
@@ -137,28 +130,28 @@ export default function HomeScreen() {
               key={route.key}
               coordinates={route.coordinates}
               strokeColor={route.color}
-              strokeWidth={4}
+              strokeWidth={3}
             />
           ))}
-          {mockStops.map((stop) => (
-          <Marker
-            key={stop.id}
-            coordinate={{
-              latitude: stop.latitude,
-              longitude: stop.longitude,
-            }}
-          >
-          <ThemedView
-             style={{
-              width: 16,
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: "rgb(219, 104, 10)",
-              borderWidth: 1.5,
-              borderColor: "black",
-              }}
-            />
-          </Marker>
+          {stops?.map((stop) => (
+            <Marker
+                key={stop.RouteStopID}
+                coordinate={{
+                latitude: stop.Latitude,
+                longitude: stop.Longitude,
+                }}
+            >
+                <ThemedView
+                    style={{
+                        width: spacing.sm,
+                        height: spacing.sm,
+                        borderRadius: borderRadius.sm,
+                        backgroundColor: stop.color,
+                        borderWidth: 1,
+                        borderColor: "black"
+                    }}
+                    />
+            </Marker>
           ))}
         </MapView>
       </View>
