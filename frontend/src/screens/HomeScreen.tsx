@@ -1,23 +1,59 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Marker, Polyline } from "react-native-maps";
-import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes } from "@/src/hooks";
+import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
+import { MaterialIcons } from "@expo/vector-icons";
+import { getBusRoutesAndStops, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
+import { borderRadius, spacing } from "../constants";
 
-//Temp mocked stops until we utilize API data
-const mockStops = [
-  { id: "1", latitude: 44.5650, longitude: -123.2780 },
-  { id: "2", latitude: 44.5635, longitude: -123.2755 },
-  { id: "3", latitude: 44.5620, longitude: -123.2730 },
+
+//Bus Map Colors
+const OSUStyle = [
+  {
+    elementType: "geometry",
+    stylers: [{ color: "#323232" }],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#C67306" }],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#754404" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#967d5d" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#C67306" }],
+  },
 ];
 
-
 export default function HomeScreen() {
+
+  const mapRef = useRef<MapView | null>(null);
+
   const { location, loading, error } = useLocation();
-  const { vehicles, refresh } = getBeavBusVehiclePositions();
-  const { routes } = getBeavBusRoutes();
+  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
+  const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
+
+  const { routes, stops } = getBusRoutesAndStops();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
@@ -37,7 +73,9 @@ export default function HomeScreen() {
 
   // Update bus coordinates
   useEffect(() => {
-    if (!vehicles) return;
+    if (!(beavBusVehicles && ctsVehicles)) return;
+
+    let vehicles = beavBusVehicles.concat(ctsVehicles);
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -72,15 +110,16 @@ export default function HomeScreen() {
       };
     });
     setBuses(updatedBuses);
-  }, [vehicles]);
+  }, [beavBusVehicles, ctsVehicles]);
 
   // Refresh bus positions every second
   useEffect(() => {
     const interval = setInterval(() => {
-      refresh();
+      beavBusRefresh();
+      ctsRefresh();
     }, 500);
     return () => clearInterval(interval);
-  }, [refresh]);
+  }, [beavBusRefresh, ctsRefresh]);
 
   if (loading) {
     return (
@@ -109,12 +148,14 @@ export default function HomeScreen() {
     <>  
       <AlertsButton />
       <View style={styles.container}>
-        {vehicles === null && (
+        {(buses === null) && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
+          ref={mapRef}
           style={styles.map}
-          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={OSUStyle}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -122,7 +163,7 @@ export default function HomeScreen() {
             longitudeDelta: 0.025,
           }}
           showsUserLocation={true}
-          showsMyLocationButton={true}
+          showsMyLocationButton={false}
           showsTraffic={true}
         >
           {buses.map((bus) => (
@@ -130,6 +171,7 @@ export default function HomeScreen() {
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
               image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
+              zIndex={10}
             />
           ))}
           {drawableRoutes.map((route) => (
@@ -137,30 +179,53 @@ export default function HomeScreen() {
               key={route.key}
               coordinates={route.coordinates}
               strokeColor={route.color}
+              fillColor={route.color}
               strokeWidth={4}
             />
           ))}
-          {mockStops.map((stop) => (
-          <Marker
-            key={stop.id}
-            coordinate={{
-              latitude: stop.latitude,
-              longitude: stop.longitude,
-            }}
-          >
-          <ThemedView
-             style={{
-              width: 16,
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: "rgb(219, 104, 10)",
-              borderWidth: 1.5,
-              borderColor: "black",
-              }}
-            />
-          </Marker>
+          {stops?.map((stop) => (
+            <Marker
+                key={stop.RouteStopID}
+                coordinate={{
+                latitude: stop.Latitude,
+                longitude: stop.Longitude,
+                }}
+            >
+                <ThemedView
+                    style={{
+                        width: spacing.md,
+                        height: spacing.md,
+                        borderRadius: borderRadius.sm,
+                        backgroundColor: stop.color,
+                        borderWidth: 1,
+                        borderColor: "black"
+                    }}
+                    />
+            </Marker>
           ))}
         </MapView>
+        <TouchableOpacity
+          style={styles.myLocationButton}
+          onPress={() => {
+            if (mapRef.current && location) {
+              mapRef.current.animateToRegion(
+                {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                },
+                500
+              );
+            }
+          }}
+        >
+          <MaterialIcons
+            name="my-location"
+            size={24}
+            color="white"
+          />
+        </TouchableOpacity>
       </View>
     </>
   );
@@ -177,6 +242,19 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+
+  myLocationButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    backgroundColor: "#C67306",
+    padding: 14,
+    borderRadius: 50,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   warn: {
     fontSize: 18,
