@@ -1,4 +1,53 @@
 import React, { useRef, useState, useEffect } from "react";
+import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated } from "react-native-maps";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useLocation } from "@/src/hooks";
+import AlertsButton from "../components/AlertsButton";
+import { colors } from "../constants";
+
+
+//Bus Map Colors
+const OSUStyle = [
+  {
+    elementType: "geometry",
+    stylers: [{ color: "#323232" }],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#C67306" }],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#754404" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#967d5d" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#C67306" }],
+  },
+];
+
+export default function HomeScreen() {
+  const { location, loading, error } = useLocation();
+
+  const mapRef = useRef<MapView | null>(null);
+
 import { View, StyleSheet, Text, Platform } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Marker, Polyline } from "react-native-maps";
 import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes } from "@/src/hooks";
@@ -113,8 +162,10 @@ export default function HomeScreen() {
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
+          ref={mapRef}
           style={styles.map}
-          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={OSUStyle}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -122,7 +173,7 @@ export default function HomeScreen() {
             longitudeDelta: 0.025,
           }}
           showsUserLocation={true}
-          showsMyLocationButton={true}
+          showsMyLocationButton={false}
           showsTraffic={true}
         >
           {buses.map((bus) => (
@@ -161,6 +212,28 @@ export default function HomeScreen() {
           </Marker>
           ))}
         </MapView>
+        <TouchableOpacity
+          style={styles.myLocationButton}
+          onPress={() => {
+            if (mapRef.current && location) {
+              mapRef.current.animateToRegion(
+                {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                },
+                500
+              );
+            }
+          }}
+        >
+          <MaterialIcons
+            name="my-location"
+            size={24}
+            color="white"
+          />
+        </TouchableOpacity>
       </View>
     </>
   );
@@ -178,6 +251,18 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
+
+  myLocationButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    backgroundColor: "#C67306",
+    padding: 14,
+    borderRadius: 50,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   warn: {
     fontSize: 18,
     color: "red",
