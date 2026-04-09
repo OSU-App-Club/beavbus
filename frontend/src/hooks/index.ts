@@ -1,2 +1,2 @@
 export { useLocation } from "./useLocation";
-export { getBeavBusRoutes, getBeavBusVehiclePositions } from "./getBusData";
+export { getBeavBusRoutes, getBeavBusVehiclePositions, getCTSBusRoutes } from "./getBusData";
