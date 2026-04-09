@@ -1,10 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Alert, Linking, Pressable, StyleSheet, View } from "react-native";
+import { openBrowserAsync } from 'expo-web-browser';
+import { WebView } from 'react-native-webview';
 
-function openAlerts() {
+async function openAlerts() {
 
     try {
-        Linking.openURL("https://www.corvallisoregon.gov/news?field_microsite_tid=581");
+        openBrowserAsync("https://www.corvallisoregon.gov/news?field_microsite_tid=581");
+        // Linking.openURL("https://www.corvallisoregon.gov/news?field_microsite_tid=581");
     } catch(error) {
         Alert.alert('Sorry. Unable to open alerts at this time.')
     }
