@@ -44,6 +44,9 @@ export default {
             "Allow BeavBus to use your location.",
         },
       ],
+      [
+        "expo-web-browser"
+      ],
     ],
     experiments: {
       reactCompiler: true,
