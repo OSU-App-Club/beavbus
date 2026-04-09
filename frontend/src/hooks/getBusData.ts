@@ -29,6 +29,33 @@ const decodePolyline = (encoded: string) => {
     return points;
 };
 
+const decodePolyline = (encoded: string) => {
+    let index = 0, len = encoded.length;
+    let lat = 0, lng = 0;
+    const points = [];
+
+    while (index < len) {
+        let b, shift = 0, result = 0;
+        do {
+            b = encoded.charCodeAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+        lat += ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+        shift = 0; result = 0;
+        do {
+            b = encoded.charCodeAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+        lng += ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+        points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
+    }
+    return points;
+};
+
 interface Stop {
     AddressID: number;
     Latitude: number;
@@ -44,13 +71,13 @@ interface Stop {
 }
 
 interface Route {
-    Description: string;
-    ETATypeID: number;
-    MapLatitude: number;
-    MapLongitude: number;
-    MapLineColor: string;
-    StopTimesPDFLink: string;
-    Stops: Stop[];
+    Description: string,
+    ETATypeID: number,
+    MapLatitude: number,
+    MapLongitude: number,
+    MapLineColor: string,
+    StopTimesPDFLink: string,
+    Stops: Stop[]
     EncodedPolyline: string;
     linePoints?: { latitude: number; longitude: number }[];
 }
@@ -155,16 +182,20 @@ export function getBeavBusRoutes(): BeavBusRoutesResult {
             setError(null);
 
             const res = await fetch(
-                `${BASE_URL}/Services/JSONPRelay.svc/GetRoutesForMapWithScheduleWithEncodedLine?apiKey=${process.env.BEAV_BUS_API_KEY}`,
+                `${BASE_URL}/Services/JSONPRelay.svc/GetRoutesForMapWithScheduleWithEncodedLine?apiKey=${process.env.EXPO_PUBLIC_BEAV_BUS_API_KEY}`
             );
 
             const data: Route[] = await res.json();
 
-            setRoutes(data);
-        } catch (err) {
-            setError(
-                err instanceof Error ? err.message : "Failed to get location",
-            );
+            const routesWithLines = data.map(route => ({
+                ...route,
+                linePoints: route.EncodedPolyline ? decodePolyline(route.EncodedPolyline) : []
+            }));
+
+            setRoutes(routesWithLines);
+
+        }   catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to get location");
         } finally {
             setLoading(false);
         }
@@ -200,7 +231,7 @@ export function getBeavBusVehiclePositions(): BeavBusVehiclePositionsResult {
             setError(null);
 
             const res = await fetch(
-                `${BASE_URL}/Services/JSONPRelay.svc/GetMapVehiclePoints?apiKey=${process.env.BEAV_BUS_API_KEY}`,
+                `${BASE_URL}/Services/JSONPRelay.svc/GetMapVehiclePoints?apiKey=${process.env.EXPO_PUBLIC_BEAV_BUS_API_KEY}`
             );
 
             const data: Vehicle[] = await res.json();

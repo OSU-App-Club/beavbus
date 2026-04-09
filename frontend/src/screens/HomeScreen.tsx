@@ -1,26 +1,36 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline } from "react-native-maps";
-import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes, getCTSBusRoutes} from "@/src/hooks";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Marker, Polyline } from "react-native-maps";
+import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes } from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
+import ThemedView from "../components/ThemedView";
+import ThemedText from "../components/ThemedText";
+
+//Temp mocked stops until we utilize API data
+const mockStops = [
+  { id: "1", latitude: 44.5650, longitude: -123.2780 },
+  { id: "2", latitude: 44.5635, longitude: -123.2755 },
+  { id: "3", latitude: 44.5620, longitude: -123.2730 },
+];
+
 
 export default function HomeScreen() {
   const { location, loading, error } = useLocation();
   const { vehicles, refresh } = getBeavBusVehiclePositions();
-  const { routes } = getCTSBusRoutes();
+  const { routes } = getBeavBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
   // Icon for each route
-  // const route54 = require('../assets/images/blue.png');
-  // const route49 = require('../assets/images/yellow.png');
-  // const route55 = require('../assets/images/green.png');
+  const route54 = require('../assets/images/blue.png');
+  const route49 = require('../assets/images/yellow.png');
+  const route55 = require('../assets/images/green.png');
 
   //Update routes
   const drawableRoutes = (routes ?? [])
   .map((route, index) => ({
     key: `${route.Description}-${index}`,
-    color: route.MapLineColor || "#db0000",
+    color: route.MapLineColor || "#000000",
     coordinates: route.linePoints || [],
   }))
   .filter((r) => r.coordinates.length > 1);
@@ -74,25 +84,25 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Getting your location...</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Getting your location...</ThemedText>
+      </ThemedView>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Error: {error}</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Error: {error}</ThemedText>
+      </ThemedView>
     );
   }
 
   if (!location) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Unable to get location</Text>
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Unable to get location</ThemedText>
+      </ThemedView>
     );
   }
   return (
@@ -100,7 +110,7 @@ export default function HomeScreen() {
       <AlertsButton />
       <View style={styles.container}>
         {vehicles === null && (
-          <Text style={styles.warn}>No bus data available</Text>
+          <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
           style={styles.map}
@@ -119,6 +129,7 @@ export default function HomeScreen() {
             <MarkerAnimated
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
+              image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
             />
           ))}
           {drawableRoutes.map((route) => (
@@ -129,6 +140,26 @@ export default function HomeScreen() {
               strokeWidth={4}
             />
           ))}
+          {mockStops.map((stop) => (
+          <Marker
+            key={stop.id}
+            coordinate={{
+              latitude: stop.latitude,
+              longitude: stop.longitude,
+            }}
+          >
+          <ThemedView
+             style={{
+              width: 16,
+              height: 16,
+              borderRadius: 8,
+              backgroundColor: "rgb(219, 104, 10)",
+              borderWidth: 1.5,
+              borderColor: "black",
+              }}
+            />
+          </Marker>
+          ))}
         </MapView>
       </View>
     </>
@@ -138,11 +169,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },
