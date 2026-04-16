@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useLocation } from "@/src/hooks";
+import { getBeavBusRoutes, getBeavBusVehiclePositions, useLocation } from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
-import { colors } from "../constants";
+import ThemedView from "../components/ThemedView";
+import ThemedText from "../components/ThemedText";
 
 
 //Bus Map Colors
@@ -44,16 +45,8 @@ const OSUStyle = [
 ];
 
 export default function HomeScreen() {
-  const { location, loading, error } = useLocation();
 
   const mapRef = useRef<MapView | null>(null);
-
-import { View, StyleSheet, Text, Platform } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Marker, Polyline } from "react-native-maps";
-import { useLocation, getBeavBusVehiclePositions, getBeavBusRoutes } from "@/src/hooks";
-import AlertsButton from "../components/AlertsButton";
-import ThemedView from "../components/ThemedView";
-import ThemedText from "../components/ThemedText";
 
 //Temp mocked stops until we utilize API data
 const mockStops = [
@@ -62,8 +55,6 @@ const mockStops = [
   { id: "3", latitude: 44.5620, longitude: -123.2730 },
 ];
 
-
-export default function HomeScreen() {
   const { location, loading, error } = useLocation();
   const { vehicles, refresh } = getBeavBusVehiclePositions();
   const { routes } = getBeavBusRoutes();
@@ -263,6 +254,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowRadius: 4,
+  },
   warn: {
     fontSize: 18,
     color: "red",
