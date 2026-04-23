@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBeavBusRoutes, getBeavBusVehiclePositions, useLocation } from "@/src/hooks";
+import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
@@ -56,8 +56,7 @@ const mockStops = [
 ];
 
   const { location, loading, error } = useLocation();
-  const { vehicles, refresh } = getBeavBusVehiclePositions();
-  const { routes } = getBeavBusRoutes();
+  const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
@@ -179,6 +178,7 @@ const mockStops = [
               key={route.key}
               coordinates={route.coordinates}
               strokeColor={route.color}
+              fillColor={route.color}
               strokeWidth={4}
             />
           ))}

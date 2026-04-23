@@ -66,21 +66,14 @@ interface Vehicle {
     Longitude: number;
 }
 
-interface BeavBusRoutesResult {
+interface RoutesResult {
     routes: Route[] | null;
     error: string | null;
     loading: boolean;
     refresh: () => Promise<void>;
 }
 
-interface CTSRoutesResult {
-    routes: Route[] | null;
-    error: string | null;
-    loading: boolean;
-    refresh: () => Promise<void>;
-}
-
-export function getCTSBusRoutes(): CTSRoutesResult {
+export function getCTSBusRoutes(): RoutesResult {
     const [routes, setRoutes] = useState<Route[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -143,7 +136,7 @@ export function getCTSBusRoutes(): CTSRoutesResult {
     };
 }
 
-export function getBeavBusRoutes(): BeavBusRoutesResult {
+export function getBeavBusRoutes(): RoutesResult {
     const [routes, setRoutes] = useState<Route[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -274,3 +267,25 @@ export default function getCTSVehiclePositions(): CTSVehiclePositionsResult {
         refresh: getCTSVehiclePositions,
     };
 }
+
+export function getBusRoutes(): RoutesResult {
+    const ctsRoutes = getCTSBusRoutes();
+    const beavBusRoutes = getBeavBusRoutes();
+
+    let routes: Route[] = [];
+    if (ctsRoutes.routes)
+        routes = routes.concat(ctsRoutes.routes)
+    if (beavBusRoutes.routes)
+        routes = routes.concat(beavBusRoutes.routes)
+
+    return {
+        routes: routes,
+        error: "",
+        loading: false,
+        refresh: async () => {
+            ctsRoutes.refresh();
+            beavBusRoutes.refresh();
+            return;
+        }
+    }
+};
