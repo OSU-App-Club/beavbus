@@ -4,6 +4,7 @@ export type RootBottomTabParamList = {
   HomeTab: undefined;
   ElapsedTimeTab: undefined;
   SettingsTab: undefined;
+  FavoritesTab: undefined;
 };
 
 export type HomeTabScreenProps = BottomTabScreenProps<
