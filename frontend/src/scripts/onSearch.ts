@@ -15,11 +15,17 @@ export function onSearch(routes: string[], searchText: string) {
 export async function getLocations(searchText: string) {
 
     const METHOD = "geocoding"
-    const QUERY = "Oregon State University"
-    const PARAMS = "proximity=ip"
+    const QUERY = "fred"
+    const PARAMS = "bbox=-123.407399,44.527523,-123.185772,44.606607&types=poi"
     const KEY = "fCIJiQ6Td63CAgVetC3q"
 
-    const response = await fetch(`https://api.maptiler.com/${METHOD}/${QUERY}.json?key=${KEY}`)
+    const response = await fetch(`https://api.maptiler.com/${METHOD}/${QUERY}.json?${PARAMS}&key=${KEY}`)
+
+
+    if (!response.ok) {
+        console.error("MapTiler error:", response.status);
+        return null;
+    }
 
     const result = await response.json();
 
