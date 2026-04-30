@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 const BASE_URL = "https://osushuttles.com";
-
-// FIXME: Get an actual domain for this
-const CTS_BASE_URL = "http://localhost:57855";
+const CTS_BASE_URL = "https://arrive-monstrous-hazy-corvallisbus.itsjamie.dev";
 
 const decodePolyline = (encoded: string) => {
     let index = 0, len = encoded.length;
