@@ -10,6 +10,11 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     icon: "./src/assets/images/logo.png",
+    "extra": {
+      "eas": {
+        "projectId": "fcd4fcbc-0b39-4c77-ad44-f9df780ac06f"
+      }
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.beavbus.app",
