@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { TextInput, StyleSheet, View, Button } from "react-native";
+import { useState, useEffect } from "react";
+import { Text, TextInput, StyleSheet, View, Button } from "react-native";
 import { borderRadius, spacing } from "../constants";
 import { useTheme } from "@react-navigation/native";
 
@@ -7,7 +7,19 @@ import { getLocations } from "../scripts/onSearch";
 
 export default function SearchBar() {
     const [text, onChangeText] = useState("");
+    const [locations, onChangeLocations] = useState([]);
     const { colors } = useTheme();
+
+    useEffect(() => {
+        const debounce = setTimeout(async () => {
+            if (text.length > 2) {
+                const result = await getLocations(text);
+                onChangeLocations(result);
+            } else {
+                onChangeLocations([]);
+            }
+        }, 300) // debounce delay in ms
+    }, [text]);
 
     return (
         <View style={styles.container}>
@@ -17,10 +29,13 @@ export default function SearchBar() {
                 value={text}
                 placeholder={"Search for a location..."}
             />
-            <Button onPress={async () => {
-                await getLocations("");
-            }} title="Test Press">
-            </Button>
+            <View>
+                {locations.map((item, index) => (
+                    <Text key={index} style={{color: colors.text}}>
+                        {item}
+                    </Text>
+                ))}
+            </View>
         </View>
     )
 }
