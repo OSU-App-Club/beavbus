@@ -29,6 +29,7 @@ export default {
         NSLocationAlwaysUsageDescription:
           "BeavBus needs background location access to function correctly.",
         UIBackgroundModes: ["location"],
+        ITSAppUsesNonExemptEncryption : false
       },
     },
     android: {
