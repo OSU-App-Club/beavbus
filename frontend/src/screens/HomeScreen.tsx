@@ -56,6 +56,8 @@ const mockStops = [
 ];
 
   const { location, loading, error } = useLocation();
+  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
+  const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
   const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
@@ -76,7 +78,9 @@ const mockStops = [
 
   // Update bus coordinates
   useEffect(() => {
-    if (!vehicles) return;
+    if (!(beavBusVehicles && ctsVehicles)) return;
+
+    let vehicles = beavBusVehicles.concat(ctsVehicles);
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -111,15 +115,16 @@ const mockStops = [
       };
     });
     setBuses(updatedBuses);
-  }, [vehicles]);
+  }, [beavBusVehicles, ctsVehicles]);
 
   // Refresh bus positions every second
   useEffect(() => {
     const interval = setInterval(() => {
-      refresh();
+      beavBusRefresh();
+      ctsRefresh();
     }, 500);
     return () => clearInterval(interval);
-  }, [refresh]);
+  }, [beavBusRefresh, ctsRefresh]);
 
   if (loading) {
     return (
@@ -148,7 +153,7 @@ const mockStops = [
     <>  
       <AlertsButton />
       <View style={styles.container}>
-        {vehicles === null && (
+        {(buses === null) && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
