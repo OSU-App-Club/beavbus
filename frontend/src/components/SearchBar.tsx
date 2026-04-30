@@ -28,7 +28,7 @@ export default function SearchBar() {
                 onChangeText={onChangeText}
                 value={text}
                 placeholder={"Search for a location..."}
-            />
+            /> 
             <View>
                 {locations.map((item, index) => (
                     <Text key={index} style={{color: colors.text}}>

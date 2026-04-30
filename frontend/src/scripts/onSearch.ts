@@ -25,7 +25,7 @@ export async function getLocations(searchText: string) {
     if (!response.ok) {
         console.error("MapTiler error:", response.status);
         return null;
-    }
+    } 
 
     const result = await response.json();
 
