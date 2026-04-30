@@ -12,7 +12,6 @@
       "distribution": "internal"
     },
     "production": {
-      "prebuildCommand": "echo '=== src contents ===' && ls -la src/ && echo '=== src/screens ===' && ls -la src/screens/ || echo 'SCREENS DIR MISSING'",
       "autoIncrement": true,
       "env": {
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true"

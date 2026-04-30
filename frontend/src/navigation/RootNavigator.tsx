@@ -1,8 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { RootBottomTabParamList } from "./types";
+import SettingsScreen from "../screens/SettingsScreen";
 import HomeScreen from "../screens/HomeScreen";
 import { TopBar } from "../components";
-import SettingsScreen from "../screens/SettingsScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 
 const Tab = createBottomTabNavigator<RootBottomTabParamList>();
