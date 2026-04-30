@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "@/src/hooks";
+import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
