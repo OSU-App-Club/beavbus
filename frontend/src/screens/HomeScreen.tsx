@@ -170,8 +170,6 @@ const mockStops = [
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsTraffic={true}
-          onMapReady={() => Alert.alert('Map ready')}
-          onMapLoaded={() => Alert.alert('Mad loaded')}
         >
           {buses.map((bus) => (
             <MarkerAnimated
@@ -213,6 +211,7 @@ const mockStops = [
         <TouchableOpacity
           style={styles.myLocationButton}
           onPress={() => {
+            console.log("here")
             if (mapRef.current && location) {
               mapRef.current.animateToRegion(
                 {

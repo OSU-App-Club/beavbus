@@ -6,16 +6,21 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+      }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
-        "GOOGLE_MAPS_API_KEY": "$GOOGLE_MAPS_API_KEY"
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
       }
     }
   },
