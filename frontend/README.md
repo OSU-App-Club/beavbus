@@ -8,7 +8,7 @@
 
    - You can optionally leave the defaults then click _Create_.
 
-   * Copy your API key and add it to a new `.env` file in `frontend/` following the example in the `.env.example` file.
+   * Copy your API key and add it to a new `.env` file in `frontend/` following the example in the `.env.example` file!
 
    Note: This key should remain private. If it's pushed to a repository or shared online, you should delete it from the Google Cloud Console and create a new one.
 
