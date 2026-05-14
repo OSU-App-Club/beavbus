@@ -168,6 +168,7 @@ const mockStops = [
         >
           {buses.map((bus) => (
               <Bus
+                map={mapRef}
                 key={bus.id}
                 bus={bus}
                 coordinate={busCoordsRef.current[bus.id] || bus.coordinate}

@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { Callout, MarkerAnimated } from "react-native-maps";
 
@@ -20,13 +20,13 @@ const route54 = require('../assets/images/blue.png');
 const route49 = require('../assets/images/yellow.png');
 const route55 = require('../assets/images/green.png');
 
-function Bus({ bus, coordinate }: { bus: Bus, coordinate: any }) {
+function Bus({ bus, coordinate, map }: { bus: Bus, coordinate: any, map: any }) {
     const { colors } = useTheme();
+    const calloutRef = useRef<Callout | null>(null);
 
     // FIXME: When the coordinate changes, hide the callout
-    // FIXME: Centre the map on this button when pressed
 
-    const height = 100;
+    const height = 120;
     const styles = StyleSheet.create({
         customView: {
             width: 140,
@@ -56,13 +56,25 @@ function Bus({ bus, coordinate }: { bus: Bus, coordinate: any }) {
 
     return (
         <MarkerAnimated
+            onSelect={() => {
+                if (map.current) {
+                    map.current.animateToRegion(
+                        {
+                            latitude: bus.coordinate.latitude,
+                            longitude: bus.coordinate.longitude,
+                            latitudeDelta: 0.03,
+                            longitudeDelta: 0.03
+                        },
+                        500
+                    )
+                }
+            }}
             coordinate={coordinate}
             image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
         >
-            <Callout tooltip style={styles.customView}>
+            <Callout tooltip style={styles.customView} ref={calloutRef}>
                 <View style={styles.bubble}>
-                    {/* Any contents must go in here */}
-                    <Text>Demo Route Name</Text>
+                    <Text>Route {bus.routeId}</Text>
                     <Text>Downtown Transit Center -- 27 min</Text>
                 </View>
                 <View style={styles.arrowBorder} />
