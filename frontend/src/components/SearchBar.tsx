@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Text, TextInput, StyleSheet, View, Button } from "react-native";
 import { borderRadius, spacing } from "../constants";
 import { useTheme } from "@react-navigation/native";
-
 import { getLocations } from "../scripts/onSearch";
+import SearchResults from "./SearchResults";
 import SearchItem from "./searchItem";
 
 export default function SearchBar() {
@@ -33,13 +33,7 @@ export default function SearchBar() {
         value={text}
         placeholder={"Search for a location..."}
       />
-      <View style={styles.resultsList}>
-        {locations.map((location, index) => (
-          <SearchItem 
-            key={`search-item-${index}`} 
-            reference={location}></SearchItem>
-        ))}
-      </View>
+      <SearchResults locations={locations}/>
     </View>
   );
 }
@@ -49,11 +43,6 @@ const styles = StyleSheet.create({
     display: "flex",
     width: "85%",
     gap: 20,
-  },
-  resultsList: {
-    gap: 15,
-    position: "absolute",
-    top: 70,
   },
   input: {
     padding: spacing.md,
