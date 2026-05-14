@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Text, TextInput, StyleSheet, View, Button } from "react-native";
 
-export default function SearchItem() {
-  //parsing of data
+interface props {
+  reference: string;
+}
 
+export default function SearchItem({ reference }: props) {
+  //parsing of data
   return (
     <View style={test.container}>
-      <Text style={test.textT}>meow</Text>
+      <Text style={test.textT}>{reference}</Text>
     </View>
   );
 }

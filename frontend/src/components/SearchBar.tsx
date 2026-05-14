@@ -35,7 +35,9 @@ export default function SearchBar() {
       />
       <View style={styles.resultsList}>
         {locations.map((location, index) => (
-          <SearchItem key={`search-item-${index}`}></SearchItem>
+          <SearchItem 
+            key={`search-item-${index}`} 
+            reference={location}></SearchItem>
         ))}
       </View>
     </View>
