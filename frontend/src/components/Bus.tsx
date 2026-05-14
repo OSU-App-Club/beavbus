@@ -20,11 +20,9 @@ const route54 = require('../assets/images/blue.png');
 const route49 = require('../assets/images/yellow.png');
 const route55 = require('../assets/images/green.png');
 
-function Bus({ bus, coordinate, map }: { bus: Bus, coordinate: any, map: any }) {
+function Bus({ bus, coordinate, map, ref }: { bus: Bus, coordinate: any, map: any, ref: any }) {
     const { colors } = useTheme();
     const calloutRef = useRef<Callout | null>(null);
-
-    // FIXME: When the coordinate changes, hide the callout
 
     const height = 120;
     const styles = StyleSheet.create({
@@ -56,6 +54,7 @@ function Bus({ bus, coordinate, map }: { bus: Bus, coordinate: any, map: any }) 
 
     return (
         <MarkerAnimated
+            ref={ref}
             onSelect={() => {
                 if (map.current) {
                     map.current.animateToRegion(

@@ -60,6 +60,7 @@ const mockStops = [
   const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
   const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
+  const busRef = useRef<Record<string, any>>({});
   const busCoordsRef = useRef<Record<string, any>>({});
 
   //Update routes
@@ -165,12 +166,17 @@ const mockStops = [
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsTraffic={true}
+          onPanDrag={() => {
+            for (let bus in busRef.current)
+              busRef.current[bus].hideCallout();
+          }}
         >
           {buses.map((bus) => (
               <Bus
                 map={mapRef}
                 key={bus.id}
                 bus={bus}
+                ref={b => busRef.current[bus.id] = b}
                 coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
               />
           ))}
