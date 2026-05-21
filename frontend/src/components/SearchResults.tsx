@@ -1,22 +1,21 @@
 import { ScrollView, StyleSheet, TextInput, View } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { borderRadius, spacing } from "../constants";
 import { useTheme } from "@react-navigation/native";
+import { LocationResult } from "../scripts/onSearch";
 import SearchItem from "./searchItem";
 
 interface props {
-    locations: string[];
+    locations: LocationResult[];
 }
 
 export default function SearchResults ({ locations }: props) {
     const { colors } = useTheme();
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.resultsList}>
-                    {locations.map((location, index) => (
+                    {locations.map((item) => (
                         <SearchItem 
-                        key={`search-item-${index}`} 
-                        reference={location} />
+                            key={`search-item-${item.id}`} 
+                            item={item} />
                     ))}
                 </View>
         </ScrollView>
@@ -25,19 +24,14 @@ export default function SearchResults ({ locations }: props) {
 
 const styles = StyleSheet.create({
     container: {
-        display: "flex",
+        position: "absolute",
         width: "85%",
         gap: 20,
-        maxHeight: 200,
+        maxHeight: 400,
+        zIndex: 99,
     },
     resultsList: {
-        gap: 15,
-        position: "absolute",
-        top: 70,
-    },
-    scrollView: {
-        backgroundColor: "green",
-        flex: 1,
-        height: 100,
+        padding: 5,
+        top: 45,
     },
 });

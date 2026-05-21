@@ -1,5 +1,11 @@
 import Fuse from 'fuse.js'
 
+export interface LocationResult {
+    id: string;
+    place_name: string;
+    coordinates: [number, number];
+}
+
 export function onSearch(routes: string[], searchText: string) {
     const fuse = new Fuse(routes);
     const results = fuse.search(searchText)
@@ -13,10 +19,10 @@ export function onSearch(routes: string[], searchText: string) {
 }
 
 export async function getLocations(searchText: string) {
-    let locations: string[] = [];
+    let locations: LocationResult[] = [];
 
     const METHOD = "geocoding"
-    const QUERY = searchText
+    const QUERY = encodeURIComponent(searchText);
     const PARAMS = "bbox=-123.407399,44.527523,-123.185772,44.606607&types=poi"
     const KEY = "fCIJiQ6Td63CAgVetC3q"
 
@@ -30,7 +36,11 @@ export async function getLocations(searchText: string) {
     const result = await response.json();
 
     for (let i: number = 0; i < result.features.length; i++) {
-        locations.push(result.features[i].place_name);
+        locations.push({
+            id: result.features[i].id,
+            place_name: result.features[i].place_name,
+            coordinates: result.features[i].geometry.coordinates // [lng, lat]
+        });
     }
 
     return locations;

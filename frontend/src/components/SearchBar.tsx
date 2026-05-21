@@ -15,11 +15,12 @@ export default function SearchBar() {
     const debounce = setTimeout(async () => {
       if (text.length > 2) {
         const result = await getLocations(text);
-        onChangeLocations(result);
+        onChangeLocations(result || []);
       } else {
         onChangeLocations([]);
       }
     }, 300); // debounce delay in ms
+    return () => clearTimeout(debounce);
   }, [text]);
 
   return (

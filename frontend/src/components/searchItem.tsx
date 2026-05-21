@@ -1,30 +1,32 @@
 import { useState } from "react";
 import { Text, TextInput, StyleSheet, View, Button } from "react-native";
+import { LocationResult } from "../scripts/onSearch";
 
 interface props {
-  reference: string;
+  item: LocationResult;
 }
 
-export default function SearchItem({ reference }: props) {
+export default function SearchItem({ item }: props) {
   //parsing of data
+  const address = item.place_name.slice(0, item.place_name.indexOf(", Corvallis")).slice(item.place_name.indexOf(", ") + 2);
+  const location_name = item.place_name.slice(0, item.place_name.indexOf(","))
   return (
-    <View style={test.container}>
-      <Text style={test.textT}>{reference}</Text>
+    <View style={style.container}>
+      <Text style={style.address}>{location_name}{"\n"}{address}{/*item.coordinates*/}</Text>
     </View>
   );
 }
 
-const test = StyleSheet.create({
+const style = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
     padding: 20,
     backgroundColor: "red",
     alignItems: "center",
   },
-  textT: {
-    fontSize: 20,
-    textAlign: "center",
+  address: {
+    fontSize: 16,
+    fontWeight: "600",
+    lineHeight: 22,
     color: "white",
     margin: 10,
     backgroundColor: "blue",
