@@ -211,7 +211,6 @@ const mockStops = [
         <TouchableOpacity
           style={styles.myLocationButton}
           onPress={() => {
-            console.log("here")
             if (mapRef.current && location) {
               mapRef.current.animateToRegion(
                 {
