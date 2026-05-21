@@ -65,6 +65,7 @@ interface Vehicle {
     IsOnRoute: boolean;
     Latitude: number;
     Longitude: number;
+    FromService: string;
 }
 
 interface RoutesResult {
@@ -257,7 +258,8 @@ export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
                     IsDelayed: false,
                     IsOnRoute: false,
                     Latitude: bus.latitude,
-                    Longitude: bus.longitude
+                    Longitude: bus.longitude,
+                    FromService: ""
                 }
                 data.push(v);
             }

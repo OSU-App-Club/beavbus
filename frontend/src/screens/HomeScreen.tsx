@@ -62,10 +62,8 @@ const mockStops = [
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
-  // Icon for each route
-  const route54 = require('../assets/images/blue.png');
-  const route49 = require('../assets/images/yellow.png');
-  const route55 = require('../assets/images/green.png');
+  const ctsRouteIcon = require('../assets/images/ctsBusMarker.svg');
+  const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
 
   //Update routes
   const drawableRoutes = (routes ?? [])
@@ -80,7 +78,8 @@ const mockStops = [
   useEffect(() => {
     if (!(beavBusVehicles && ctsVehicles)) return;
 
-    let vehicles = beavBusVehicles.concat(ctsVehicles);
+    let vehicles = beavBusVehicles.map(v => {v.FromService = "OSU"; return v});
+    vehicles = vehicles.concat(ctsVehicles.map(v => {v.FromService = "CTS"; return v}));
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -175,7 +174,7 @@ const mockStops = [
             <MarkerAnimated
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-              image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
+              image={bus.FromService == "OSU" ? osuRouteIcon : ctsRouteIcon}
             />
           ))}
           {drawableRoutes.map((route) => (
