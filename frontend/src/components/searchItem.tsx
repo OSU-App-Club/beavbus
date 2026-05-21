@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, TextInput, StyleSheet, View, Button } from "react-native";
+import { Text, TextInput, StyleSheet, View, Pressable } from "react-native";
 import { LocationResult } from "../scripts/onSearch";
 
 interface props {
@@ -10,10 +10,14 @@ export default function SearchItem({ item }: props) {
   //parsing of data
   const address = item.place_name.slice(0, item.place_name.indexOf(", Corvallis")).slice(item.place_name.indexOf(", ") + 2);
   const location_name = item.place_name.slice(0, item.place_name.indexOf(","))
+  
+  const handlePress = () => {
+    console.log(`pressed by coords: ${item.coordinates}`);
+  }
   return (
-    <View style={style.container}>
-      <Text style={style.address}>{location_name}{"\n"}{address}{/*item.coordinates*/}</Text>
-    </View>
+    <Pressable onPress={handlePress} style={style.container} >
+      <Text style={style.address}>{location_name}{"\n"}{address}{item.coordinates}</Text>
+    </Pressable>
   );
 }
 
