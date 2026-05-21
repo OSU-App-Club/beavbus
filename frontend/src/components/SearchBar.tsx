@@ -5,8 +5,15 @@ import { useTheme } from "@react-navigation/native";
 import { getLocations } from "../scripts/onSearch";
 import SearchResults from "./SearchResults";
 import SearchItem from "./searchItem";
+import { HomeScreen } from "../screens";
 
-export default function SearchBar() {
+//find
+interface props {
+  dropPin: () => void;
+}
+
+
+export default function SearchBar({dropPin}:props) {
   const [text, onChangeText] = useState("");
   const [locations, onChangeLocations] = useState([]);
   const { colors } = useTheme();
@@ -35,7 +42,7 @@ export default function SearchBar() {
         value={text}
         placeholder={"Search for a location..."}
       />
-      <SearchResults locations={locations}/>
+      <SearchResults locations={locations}/> 
     </View>
   );
 }

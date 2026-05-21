@@ -5,6 +5,7 @@ import { darkTheme } from "../constants/theme";
 
 interface props {
   item: LocationResult;
+  dropPin: void;
 }
 
 export default function SearchItem({ item }: props) {
@@ -15,6 +16,7 @@ export default function SearchItem({ item }: props) {
 
   const handlePress = () => {
     console.log(`pressed by coords: ${item.coordinates}`);
+    // call drop pin
   }
   return (
     <Pressable onPress={handlePress} style={style.container} >

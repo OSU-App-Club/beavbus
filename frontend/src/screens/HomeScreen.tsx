@@ -121,6 +121,43 @@ const mockStops = [
     }, 500);
     return () => clearInterval(interval);
   }, [refresh]);
+  
+  const dropPin = () => {
+     const currMapItem = {
+      coordinate: "-126,-10"
+    }
+    const longLat = currMapItem.coordinate.split(',');
+    console.log(longLat)
+
+    
+  }
+
+
+  // Listen for changes on currMapItem fixme 
+  useEffect(() => {
+    const currMapItem = {
+      coordinate: "-126,-10"
+    }
+    const longLat = currMapItem.coordinate.split(',');
+    console.log(longLat)
+    // <Marker
+    //   key={currMapItem.id} //add a prepended str
+    //   coordinate={{
+    //     latitude: currMapItem,
+    //     longitude: currMapItem.longitude,
+    //   }}
+    // >
+    //   <ThemedView
+    //     style={{
+    //       width: 16,
+    //       height: 16,
+    //       borderRadius: 8,
+    //       backgroundColor: "rgb(219, 104, 10)",
+    //       borderWidth: 1.5,
+    //       borderColor: "black",
+    //       }}
+    //   />
+    }, []);
 
   if (loading) {
     return (
