@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, TextInput, StyleSheet, View, Button } from "react-native";
-import { borderRadius, spacing } from "../constants";
+import { borderRadius, spacing, darkTheme } from "../constants";
 import { useTheme } from "@react-navigation/native";
 import { getLocations } from "../scripts/onSearch";
 import SearchResults from "./SearchResults";
@@ -28,6 +28,7 @@ export default function SearchBar() {
       <TextInput
         style={[
           styles.input,
+          locations.length > 0 ? styles.inputHasText : styles.inputNoText,
           { color: colors.text, backgroundColor: colors.background },
         ]}
         onChangeText={onChangeText}
@@ -48,9 +49,15 @@ const styles = StyleSheet.create({
   input: {
     padding: spacing.md,
     width: "auto",
-    borderRadius: borderRadius.full,
     height: 50,
     borderWidth: 1,
-    borderColor: "#283790",
+    borderColor: darkTheme.colors.border,
   },
+  inputHasText: {
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  inputNoText: {
+    borderRadius: borderRadius.full,
+  }
 });
