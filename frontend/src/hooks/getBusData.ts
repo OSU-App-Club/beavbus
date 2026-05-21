@@ -136,6 +136,69 @@ export function getCTSBusRoutes(): RoutesResult {
         routes,
         error,
         loading,
+        refresh: getCTSBusRoutes,
+    };
+}
+
+export function getBeavBusRoutes(): RoutesResult {
+    const [routes, setRoutes] = useState<Route[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    const getCTSBusRoutes = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await fetch(
+                "https://corvallisbuswest.azurewebsites.net/api/static/",
+            );
+
+            const data = await response.json();
+
+            const parsedRoutes: Route[] = [];
+            const routesObj = data.routes;
+
+            for (const key in routesObj) {
+                if (routesObj.hasOwnProperty(key)) {
+                    const rawRoute = routesObj[key];
+
+                    const route: Route = {
+                        Description: `Route ${rawRoute.routeNo}`,
+                        ETATypeID: parseInt(rawRoute.routeNo, 10) || 0,
+                        MapLatitude: 0,
+                        MapLongitude: 0,
+                        MapLineColor: `#${rawRoute.color}`,
+                        StopTimesPDFLink: rawRoute.url,
+                        Stops: [],
+                        EncodedPolyline: rawRoute.polyline,
+                        linePoints: rawRoute.polyline
+                            ? decodePolyline(rawRoute.polyline)
+                            : [],
+                    };
+
+                    parsedRoutes.push(route);
+                }
+            }
+
+            setRoutes(parsedRoutes);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Failed to get location",
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        getCTSBusRoutes();
+    }, []);
+
+    return {
+        routes,
+        error,
+        loading,
         stops: [],
         refresh: getCTSBusRoutes,
     };

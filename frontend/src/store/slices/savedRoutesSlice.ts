@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { SavedRoute } from "@/src/types";
+import type { SavedRoute } from "../../types";
 
 interface SavedRoutesState {
   routes: SavedRoute[];

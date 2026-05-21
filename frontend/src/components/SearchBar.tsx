@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { TextInput, StyleSheet, View } from "react-native";
+import { TextInput, StyleSheet, View, Button } from "react-native";
 import { borderRadius, spacing } from "../constants";
 import { useTheme } from "@react-navigation/native";
+
+import { getLocations } from "../scripts/onSearch";
 
 export default function SearchBar() {
     const [text, onChangeText] = useState("");
@@ -15,6 +17,10 @@ export default function SearchBar() {
                 value={text}
                 placeholder={"Search for a location..."}
             />
+            <Button onPress={async () => {
+                await getLocations("");
+            }} title="Test Press">
+            </Button>
         </View>
     )
 }

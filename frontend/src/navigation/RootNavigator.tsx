@@ -3,6 +3,7 @@ import { RootBottomTabParamList } from "./types";
 import HomeScreen from "../screens/HomeScreen";
 import { TopBar } from "../components";
 import SettingsScreen from "../screens/SettingsScreen";
+import FavoritesScreen from "../screens/FavoritesScreen";
 
 const Tab = createBottomTabNavigator<RootBottomTabParamList>();
 
@@ -19,6 +20,11 @@ export default function RootNavigator() {
         name="HomeTab"
         component={HomeScreen}
         options={{ title: "Home" }}
+      />
+      <Tab.Screen
+        name="FavoritesTab"
+        component={FavoritesScreen}
+        options={{ title: "Favorites" }}
       />
       <Tab.Screen
         name="SettingsTab"

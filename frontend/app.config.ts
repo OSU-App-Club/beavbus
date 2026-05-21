@@ -10,12 +10,14 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     icon: "./src/assets/images/logo.png",
+    "extra": {
+      "eas": {
+        "projectId": "fcd4fcbc-0b39-4c77-ad44-f9df780ac06f"
+      }
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.beavbus.app",
-      config: {
-        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-      },
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           "BeavBus uses your location to show nearby places.",
@@ -24,6 +26,7 @@ export default {
         NSLocationAlwaysUsageDescription:
           "BeavBus needs background location access to function correctly.",
         UIBackgroundModes: ["location"],
+        ITSAppUsesNonExemptEncryption : false
       },
     },
     android: {
@@ -31,12 +34,16 @@ export default {
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       config: {
-        googleMapsApiKey: {
-          apiKey: process.env.GOOGLE_MAPS_API_KEY,
-        },
+        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
       },
     },
     plugins: [
+      [
+        "react-native-maps",
+        {
+          iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        },
+      ],
       [
         "expo-location",
         {
@@ -44,9 +51,12 @@ export default {
             "Allow BeavBus to use your location.",
         },
       ],
+      [
+        "expo-web-browser"
+      ],
     ],
     experiments: {
-      reactCompiler: true,
+      reactCompiler: false,
     },
   },
 };
