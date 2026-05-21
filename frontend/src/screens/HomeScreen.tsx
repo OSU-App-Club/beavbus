@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, Platform, TouchableOpacity, Pressable } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
-
+import Bus from "../components/Bus";
 
 //Bus Map Colors
 const OSUStyle = [
@@ -60,12 +60,8 @@ const mockStops = [
   const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
   const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
+  const busRef = useRef<Record<string, any>>({});
   const busCoordsRef = useRef<Record<string, any>>({});
-
-  // Icon for each route
-  const route54 = require('../assets/images/blue.png');
-  const route49 = require('../assets/images/yellow.png');
-  const route55 = require('../assets/images/green.png');
 
   //Update routes
   const drawableRoutes = (routes ?? [])
@@ -170,13 +166,19 @@ const mockStops = [
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsTraffic={true}
+          onPanDrag={() => {
+            for (let bus in busRef.current)
+              busRef.current[bus].hideCallout();
+          }}
         >
           {buses.map((bus) => (
-            <MarkerAnimated
-              key={bus.id}
-              coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-              image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
-            />
+              <Bus
+                map={mapRef}
+                key={bus.id}
+                bus={bus}
+                ref={b => busRef.current[bus.id] = b}
+                coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
+              />
           ))}
           {drawableRoutes.map((route) => (
             <Polyline
