@@ -46,17 +46,26 @@ const OSUStyle = [
   },
 ];
 
+
+const normalizeColor = (color: string) => {
+  if (!color) return "#000000";
+  if (color.startsWith("#") && color.length === 9) {
+    return color.substring(0, 7);
+  }
+  return color;
+};
+
 export default function HomeScreen() {
 
   const useGoogleMaps = useAppSelector(selectUseGoogleMaps);
   const mapRef = useRef<MapView | null>(null);
 
-//Temp mocked stops until we utilize API data
-const mockStops = [
-  { id: "1", latitude: 44.5650, longitude: -123.2780 },
-  { id: "2", latitude: 44.5635, longitude: -123.2755 },
-  { id: "3", latitude: 44.5620, longitude: -123.2730 },
-];
+  //Temp mocked stops until we utilize API data
+  const mockStops = [
+    { id: "1", latitude: 44.5650, longitude: -123.2780 },
+    { id: "2", latitude: 44.5635, longitude: -123.2755 },
+    { id: "3", latitude: 44.5620, longitude: -123.2730 },
+  ];
 
   const { location, loading, error } = useLocation();
   const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
@@ -72,12 +81,12 @@ const mockStops = [
 
   //Update routes
   const drawableRoutes = (routes ?? [])
-  .map((route, index) => ({
-    key: `${route.Description}-${index}`,
-    color: route.MapLineColor || "#000000",
-    coordinates: route.linePoints || [],
-  }))
-  .filter((r) => r.coordinates.length > 1);
+    .map((route, index) => ({
+      key: `${route.Description}-${index}`,
+      color: normalizeColor(route.MapLineColor || "#000000"),
+      coordinates: route.linePoints || [],
+    }))
+    .filter((r) => r.coordinates.length > 1);
 
   // Update bus coordinates
   useEffect(() => {
@@ -90,7 +99,7 @@ const mockStops = [
       const routeId = vehicle.RouteID;
 
       // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
-      
+
       if (!busCoordsRef.current[id]) {
         busCoordsRef.current[id] = new AnimatedRegion({
           latitude: vehicle.Latitude,
@@ -153,7 +162,7 @@ const mockStops = [
     );
   }
   return (
-    <>  
+    <>
       <AlertsButton />
       <View style={styles.container}>
         {(buses === null) && (
@@ -191,24 +200,24 @@ const mockStops = [
             />
           ))}
           {mockStops.map((stop) => (
-          <Marker
-            key={stop.id}
-            coordinate={{
-              latitude: stop.latitude,
-              longitude: stop.longitude,
-            }}
-          >
-          <ThemedView
-             style={{
-              width: 16,
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: "rgb(219, 104, 10)",
-              borderWidth: 1.5,
-              borderColor: "black",
+            <Marker
+              key={stop.id}
+              coordinate={{
+                latitude: stop.latitude,
+                longitude: stop.longitude,
               }}
-            />
-          </Marker>
+            >
+              <ThemedView
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 8,
+                  backgroundColor: "rgb(219, 104, 10)",
+                  borderWidth: 1.5,
+                  borderColor: "black",
+                }}
+              />
+            </Marker>
           ))}
         </MapView>
         <TouchableOpacity
