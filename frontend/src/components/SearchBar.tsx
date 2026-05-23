@@ -12,28 +12,24 @@ export default function SearchBar() {
     return (
         <View style={styles.container}>
             <TextInput
-                style={[styles.input, {color: colors.text, backgroundColor: colors.background}]}
+                style={[styles.input, { color: colors.text, backgroundColor: colors.background }]}
                 onChangeText={onChangeText}
                 value={text}
-                placeholder={"Search for a location..."}
+                placeholder="Search for a location..."
             />
-            <Button onPress={async () => {
-                await getLocations("");
-            }} title="Test Press">
-            </Button>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-        display: 'flex',
-        width: '85%',
+        display: "flex",
+        width: "85%",
     },
     input: {
         padding: spacing.md,
-        width: 'auto',
+        width: "auto",
         flex: 1,
         borderRadius: borderRadius.full,
-    }
-})
+    },
+});

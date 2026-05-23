@@ -6,6 +6,8 @@ import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLo
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
+import { useAppSelector } from "../store/hooks";
+import { selectUseGoogleMaps } from "../store/slices/settingsSlice";
 
 
 //Bus Map Colors
@@ -46,6 +48,7 @@ const OSUStyle = [
 
 export default function HomeScreen() {
 
+  const useGoogleMaps = useAppSelector(selectUseGoogleMaps);
   const mapRef = useRef<MapView | null>(null);
 
 //Temp mocked stops until we utilize API data
@@ -159,8 +162,8 @@ const mockStops = [
         <MapView
           ref={mapRef}
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={OSUStyle}
+          provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
+          customMapStyle={useGoogleMaps ? OSUStyle : undefined}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
