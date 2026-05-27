@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Text, TextInput, StyleSheet, View, Pressable } from "react-native";
 import { LocationResult } from "../scripts/onSearch";
 import { darkTheme } from "../constants/theme";
@@ -11,7 +10,8 @@ interface props {
 export default function SearchItem({ item }: props) {
   //parsing of data
   const location_name = item.place_name.slice(0, item.place_name.indexOf(","));
-  let address = item.place_name.slice(0, item.place_name.indexOf(", Corvallis"));
+  const isCorvallis = item.place_name.indexOf(", Corvallis") !== -1;  // if not Corvallis, then Philomath
+  let address = item.place_name.slice(0, item.place_name.indexOf(`, ${isCorvallis ? "Corvallis" : "Philomath"}`));  // remove city/state/zip code
   address = address.slice(item.place_name.indexOf(", ") + 2);
 
   const handlePress = () => {
@@ -30,7 +30,7 @@ const style = StyleSheet.create({
     display: "flex",
     padding: 0,
     width: "100%",
-    backgroundColor: darkTheme.colors.background,
+    backgroundColor: "#272727d6",
     borderColor: darkTheme.colors.card,
   },
   text: {
