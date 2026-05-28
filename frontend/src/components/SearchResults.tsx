@@ -2,12 +2,14 @@ import { ScrollView, StyleSheet, SafeAreaView, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { LocationResult } from "../scripts/onSearch";
 import SearchItem from "./searchItem";
+import { Dispatch, SetStateAction } from "react";
 
 interface props {
     locations: LocationResult[];
+    onChangeText: Dispatch<SetStateAction<string>>;
 }
 
-export default function SearchResults ({ locations }: props) {
+export default function SearchResults ({ locations, onChangeText }: props) {
     const { colors } = useTheme();
     return (
         <ScrollView 
@@ -19,7 +21,8 @@ export default function SearchResults ({ locations }: props) {
                     {locations.map((item) => (
                         <SearchItem 
                             key={`search-item-${item.id}`} 
-                            item={item} />
+                            item={item} 
+                            onChangeText={onChangeText} />
                     ))}
                 </View>
         </ScrollView>

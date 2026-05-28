@@ -35,7 +35,7 @@ export default function SearchBar() {
         value={text}
         placeholder={"Search for a location..."}
       />
-      <SearchResults locations={locations} /> {/*pass locations result to component*/}
+      <SearchResults locations={locations} onChangeText={onChangeText} /> {/*pass locations result to component*/}
     </View>
   );
 }

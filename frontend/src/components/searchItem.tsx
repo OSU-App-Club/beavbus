@@ -1,13 +1,15 @@
-import { Text, StyleSheet, Pressable } from "react-native";
+import { Text, StyleSheet, Pressable, Keyboard } from "react-native";
 import { LocationResult } from "../scripts/onSearch";
 import { darkTheme } from "../constants/theme";
 import { useMapPin } from "../components/MapPinContext"; //import context file
+import { Dispatch, SetStateAction } from "react";
 
 interface props {
   item: LocationResult;
+  onChangeText: Dispatch<SetStateAction<string>>;
 }
 
-export default function SearchItem({ item }: props) {
+export default function SearchItem({ item, onChangeText }: props) {
   const { setSelectedLocation } = useMapPin(); //get ref to the selectedLocation SETTER from context, so we can use it.
 
   //parsing of data
@@ -18,6 +20,9 @@ export default function SearchItem({ item }: props) {
 
   const handlePress = () => {
     setSelectedLocation(item); //set state of selectLocation
+    onChangeText("");
+    Keyboard.dismiss();
+
   }
   return (
     <Pressable onPress={handlePress} style={style.container} >
