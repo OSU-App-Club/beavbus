@@ -10,6 +10,11 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     icon: "./src/assets/images/logo.png",
+    extra: {
+      eas: {
+        "projectId": "8d40a89e-2108-4794-93d9-51b732f614cd"
+      }
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.beavbus.app",
@@ -24,6 +29,7 @@ export default {
         NSLocationAlwaysUsageDescription:
           "BeavBus needs background location access to function correctly.",
         UIBackgroundModes: ["location"],
+        ITSAppUsesNonExemptEncryption: false
       },
     },
     android: {
@@ -42,11 +48,14 @@ export default {
         {
           locationAlwaysAndWhenInUsePermission:
             "Allow BeavBus to use your location.",
-        },
+        }
       ],
       [
         "expo-web-browser"
       ],
+      [
+        "expo-notifications"
+      ]
     ],
     experiments: {
       reactCompiler: true,
