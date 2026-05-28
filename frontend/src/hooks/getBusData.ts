@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 const BASE_URL = "https://osushuttles.com";
+const CTS_BASE_URL = "https://arrive-monstrous-hazy-corvallisbus.itsjamie.dev";
 
 const decodePolyline = (encoded: string) => {
     let index = 0, len = encoded.length;
@@ -64,23 +65,17 @@ interface Vehicle {
     IsOnRoute: boolean;
     Latitude: number;
     Longitude: number;
+    FromService: string;
 }
 
-interface BeavBusRoutesResult {
+interface RoutesResult {
     routes: Route[] | null;
     error: string | null;
     loading: boolean;
     refresh: () => Promise<void>;
 }
 
-interface CTSRoutesResult {
-    routes: Route[] | null;
-    error: string | null;
-    loading: boolean;
-    refresh: () => Promise<void>;
-}
-
-export function getCTSBusRoutes(): CTSRoutesResult {
+export function getCTSBusRoutes(): RoutesResult {
     const [routes, setRoutes] = useState<Route[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -143,7 +138,7 @@ export function getCTSBusRoutes(): CTSRoutesResult {
     };
 }
 
-export function getBeavBusRoutes(): BeavBusRoutesResult {
+export function getBeavBusRoutes(): RoutesResult {
     const [routes, setRoutes] = useState<Route[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -237,7 +232,7 @@ interface CTSVehiclePositionsResult {
     refresh: () => Promise<void>;
 }
 
-export default function getCTSVehiclePositions(): CTSVehiclePositionsResult {
+export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
     const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -248,10 +243,26 @@ export default function getCTSVehiclePositions(): CTSVehiclePositionsResult {
             setError(null);
 
             const res = await fetch(
-                `${BASE_URL}/Services/JSONPRelay.svc/GetMapVehiclePoints?apiKey=${process.env.BEAV_BUS_API_KEY}`,
+                `${CTS_BASE_URL}/api/positions`,
             );
 
-            const data: Vehicle[] = await res.json();
+            const d = await res.json();
+            const data: Vehicle[] = [];
+            for (const bus of d) {
+                let v: Vehicle = {
+                    VehicleID: +bus.busLabel,
+                    RouteID: bus.busLabel,
+                    Seconds: 0,
+                    Name: "",
+                    GroundSpeed: bus.speed,
+                    IsDelayed: false,
+                    IsOnRoute: false,
+                    Latitude: bus.latitude,
+                    Longitude: bus.longitude,
+                    FromService: ""
+                }
+                data.push(v);
+            }
 
             setVehicles(data);
         } catch (err) {
@@ -274,3 +285,25 @@ export default function getCTSVehiclePositions(): CTSVehiclePositionsResult {
         refresh: getCTSVehiclePositions,
     };
 }
+
+export function getBusRoutes(): RoutesResult {
+    const ctsRoutes = getCTSBusRoutes();
+    const beavBusRoutes = getBeavBusRoutes();
+
+    let routes: Route[] = [];
+    if (ctsRoutes.routes)
+        routes = routes.concat(ctsRoutes.routes)
+    if (beavBusRoutes.routes)
+        routes = routes.concat(beavBusRoutes.routes)
+
+    return {
+        routes: routes,
+        error: "",
+        loading: false,
+        refresh: async () => {
+            ctsRoutes.refresh();
+            beavBusRoutes.refresh();
+            return;
+        }
+    }
+};

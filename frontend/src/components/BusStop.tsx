@@ -10,13 +10,14 @@ function BusStop({name}: {name: string}) {
     const { colors } = useTheme();
     return(
         <ThemedView style={styles.card}>
-            <ThemedText>{name}</ThemedText>
+            <ThemedText style={styles.subcard}> {name}</ThemedText>
             <Pressable onPress={() => {}}
             style={ ({pressed}) => [styles.button,
                 {
                     backgroundColor: pressed? colors.busStopCardBgPressed : colors.busStopCardBg
                 }]
             }>
+            
             </Pressable>
         </ThemedView>
     )
@@ -25,18 +26,23 @@ function BusStop({name}: {name: string}) {
 const styles = StyleSheet.create({
     card: {
         display: 'flex',
-    },
+        flexDirection: 'row',
 
+    },
+    subcard: {
+        width: 250,
+    },
+    
     button: {
         width: 100,
-        
+        margin: 10,
         borderRadius: 5,
         borderTopWidth: 2,
         borderLeftWidth: 2,
         borderRightWidth: 2,
         height: 50,
         backgroundColor: 'yellow',
-        
-    }
+        alignSelf: 'flex-end',
+    },
 });
 export default BusStop;

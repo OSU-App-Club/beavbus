@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBeavBusRoutes, getBeavBusVehiclePositions, useLocation } from "@/src/hooks";
+import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
@@ -78,15 +78,14 @@ const mockStops = [
 ];
 
   const { location, loading, error } = useLocation();
-  const { vehicles, refresh } = getBeavBusVehiclePositions();
-  const { routes } = getBeavBusRoutes();
+  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
+  const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
+  const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
-  // Icon for each route
-  const route54 = require('../assets/images/blue.png');
-  const route49 = require('../assets/images/yellow.png');
-  const route55 = require('../assets/images/green.png');
+  const ctsRouteIcon = require('../assets/images/ctsBusMarker.svg');
+  const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
 
   //Update routes
   const drawableRoutes = (routes ?? [])
@@ -99,7 +98,10 @@ const mockStops = [
 
   // Update bus coordinates
   useEffect(() => {
-    if (!vehicles) return;
+    if (!(beavBusVehicles && ctsVehicles)) return;
+
+    let vehicles = beavBusVehicles.map(v => {v.FromService = "OSU"; return v});
+    vehicles = vehicles.concat(ctsVehicles.map(v => {v.FromService = "CTS"; return v}));
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -134,16 +136,16 @@ const mockStops = [
       };
     });
     setBuses(updatedBuses);
-  }, [vehicles]);
+  }, [beavBusVehicles, ctsVehicles]);
 
   // Refresh bus positions every second
   useEffect(() => {
     const interval = setInterval(() => {
-      refresh();
+      beavBusRefresh();
+      ctsRefresh();
     }, 500);
     return () => clearInterval(interval);
-  }, [refresh]);
-  
+  }, [beavBusRefresh, ctsRefresh]);
 
   if (loading) {
     return (
@@ -172,7 +174,7 @@ const mockStops = [
     <>  
       <AlertsButton />
       <View style={styles.container}>
-        {vehicles === null && (
+        {(buses === null) && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
@@ -203,7 +205,7 @@ const mockStops = [
             <MarkerAnimated
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-              image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
+              image={bus.FromService == "OSU" ? osuRouteIcon : ctsRouteIcon}
             />
           ))}
           {drawableRoutes.map((route) => (
@@ -211,6 +213,7 @@ const mockStops = [
               key={route.key}
               coordinates={route.coordinates}
               strokeColor={route.color}
+              fillColor={route.color}
               strokeWidth={4}
             />
           ))}

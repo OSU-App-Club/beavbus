@@ -10,6 +10,11 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     icon: "./src/assets/images/logo.png",
+    "extra": {
+      "eas": {
+        "projectId": "fcd4fcbc-0b39-4c77-ad44-f9df780ac06f"
+      }
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.beavbus.app",
@@ -25,6 +30,7 @@ export default {
         NSLocationAlwaysUsageDescription:
           "BeavBus needs background location access to function correctly.",
         UIBackgroundModes: ["location"],
+        ITSAppUsesNonExemptEncryption : false
       },
     },
     android: {
@@ -45,6 +51,12 @@ export default {
     },
     plugins: [
       [
+        "react-native-maps",
+        {
+          iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        },
+      ],
+      [
         "expo-location",
         {
           locationAlwaysAndWhenInUsePermission:
@@ -56,7 +68,7 @@ export default {
       ],
     ],
     experiments: {
-      reactCompiler: true,
+      reactCompiler: false,
     },
   },
 };

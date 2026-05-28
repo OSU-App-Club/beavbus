@@ -14,6 +14,8 @@ declare module '@react-navigation/native' {
             // Custom ThemedSwitch colors
             switchTrackFalse: string;
             switchThumb: string;
+            busStopCardBgPressed: string;
+            busStopCardBg: string;
         };
     };
 
