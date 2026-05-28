@@ -7,6 +7,8 @@ import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 
+//add func to GET mapPin LongLat from MapPinContext
+import { useMapPin } from "../components/MapPinContext";
 
 //Bus Map Colors
 const OSUStyle = [
@@ -47,6 +49,16 @@ const OSUStyle = [
 export default function HomeScreen() {
 
   const mapRef = useRef<MapView | null>(null);
+
+  //get the current state from selectLocation state variable (from context)
+  const {selectedLocation} = useMapPin(); 
+
+  //useEffect hook to trigger on change of selectLocation (from context!)
+  useEffect(() => {
+    if(selectedLocation){
+      console.log("Dropping pin...", selectedLocation?.coordinates)
+    }
+  },[selectedLocation]);
 
 //Temp mocked stops until we utilize API data
 const mockStops = [
@@ -122,42 +134,6 @@ const mockStops = [
     return () => clearInterval(interval);
   }, [refresh]);
   
-  const dropPin = () => {
-     const currMapItem = {
-      coordinate: "-126,-10"
-    }
-    const longLat = currMapItem.coordinate.split(',');
-    console.log(longLat)
-
-    
-  }
-
-
-  // Listen for changes on currMapItem fixme 
-  useEffect(() => {
-    const currMapItem = {
-      coordinate: "-126,-10"
-    }
-    const longLat = currMapItem.coordinate.split(',');
-    console.log(longLat)
-    // <Marker
-    //   key={currMapItem.id} //add a prepended str
-    //   coordinate={{
-    //     latitude: currMapItem,
-    //     longitude: currMapItem.longitude,
-    //   }}
-    // >
-    //   <ThemedView
-    //     style={{
-    //       width: 16,
-    //       height: 16,
-    //       borderRadius: 8,
-    //       backgroundColor: "rgb(219, 104, 10)",
-    //       borderWidth: 1.5,
-    //       borderColor: "black",
-    //       }}
-    //   />
-    }, []);
 
   if (loading) {
     return (
@@ -204,6 +180,15 @@ const mockStops = [
           showsMyLocationButton={false}
           showsTraffic={true}
         >
+          {selectedLocation && (
+          <Marker
+            coordinate={{
+              latitude: selectedLocation.coordinates[1],
+              longitude: selectedLocation.coordinates[0],
+            }}
+            title={selectedLocation.place_name}
+          />
+        )}
           {buses.map((bus) => (
             <MarkerAnimated
               key={bus.id}

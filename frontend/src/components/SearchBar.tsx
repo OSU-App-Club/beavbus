@@ -2,29 +2,24 @@ import { useState, useEffect } from "react";
 import { Text, TextInput, StyleSheet, View, Button } from "react-native";
 import { borderRadius, spacing, darkTheme } from "../constants";
 import { useTheme } from "@react-navigation/native";
-import { getLocations } from "../scripts/onSearch";
+import { getLocations, LocationResult } from "../scripts/onSearch";
 import SearchResults from "./SearchResults";
 import SearchItem from "./searchItem";
 import { HomeScreen } from "../screens";
 
-//find
-interface props {
-  dropPin: () => void;
-}
 
-
-export default function SearchBar({dropPin}:props) {
+export default function SearchBar() {
   const [text, onChangeText] = useState("");
-  const [locations, onChangeLocations] = useState([]);
+  const [locations, setLocations] = useState<LocationResult[]>([]);
   const { colors } = useTheme();
 
   useEffect(() => {
     const debounce = setTimeout(async () => {
       if (text.length > 2) {
         const result = await getLocations(text);
-        onChangeLocations(result || []);
+        setLocations(result || []); //set the locations state variable with result
       } else {
-        onChangeLocations([]);
+        setLocations([]); 
       }
     }, 300); // debounce delay in ms
     return () => clearTimeout(debounce);
@@ -42,7 +37,7 @@ export default function SearchBar({dropPin}:props) {
         value={text}
         placeholder={"Search for a location..."}
       />
-      <SearchResults locations={locations}/> 
+      <SearchResults locations={locations}/> {/*pass locations result to component*/}
     </View>
   );
 }

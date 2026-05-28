@@ -9,11 +9,14 @@ import { store, persistor } from "./store/store";
 import { RootNavigator } from "./navigation";
 import { darkTheme, lightTheme } from "./constants";
 
+import { MapPinProvider } from "./components/MapPinContext";
+
 export default function App() {
   const scheme = useColorScheme();
   const theme = scheme === "dark" ? darkTheme : lightTheme;
 
   return (
+    <MapPinProvider> {/*add global-context by wrapping entire app*/}
     <Provider store={store}>
       <PersistGate
         loading={
@@ -31,6 +34,7 @@ export default function App() {
         </SafeAreaProvider>
       </PersistGate>
     </Provider>
+    </MapPinProvider>
   );
 }
 

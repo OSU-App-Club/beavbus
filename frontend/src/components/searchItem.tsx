@@ -1,13 +1,15 @@
 import { Text, TextInput, StyleSheet, View, Pressable } from "react-native";
 import { LocationResult } from "../scripts/onSearch";
 import { darkTheme } from "../constants/theme";
+import { useMapPin } from "../components/MapPinContext"; //import context file
 
 interface props {
   item: LocationResult;
-  dropPin: void;
 }
 
 export default function SearchItem({ item }: props) {
+  const { setSelectedLocation } = useMapPin(); //get ref to the selectedLocation SETTER from context, so we can use it.
+
   //parsing of data
   const location_name = item.place_name.slice(0, item.place_name.indexOf(","));
   const isCorvallis = item.place_name.indexOf(", Corvallis") !== -1;  // if not Corvallis, then Philomath
@@ -16,7 +18,7 @@ export default function SearchItem({ item }: props) {
 
   const handlePress = () => {
     console.log(`pressed by coords: ${item.coordinates}`);
-    // call drop pin
+    setSelectedLocation(item); //set state of selectLocation
   }
   return (
     <Pressable onPress={handlePress} style={style.container} >
