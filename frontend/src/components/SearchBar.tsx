@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { Text, TextInput, StyleSheet, View, Button } from "react-native";
+import { TextInput, StyleSheet, View, Button } from "react-native";
 import { borderRadius, spacing, darkTheme } from "../constants";
 import { useTheme } from "@react-navigation/native";
 import { getLocations, LocationResult } from "../scripts/onSearch";
 import SearchResults from "./SearchResults";
-import SearchItem from "./searchItem";
-import { HomeScreen } from "../screens";
 
 
 export default function SearchBar() {
@@ -37,7 +35,7 @@ export default function SearchBar() {
         value={text}
         placeholder={"Search for a location..."}
       />
-      <SearchResults locations={locations}/> {/*pass locations result to component*/}
+      <SearchResults locations={locations} /> {/*pass locations result to component*/}
     </View>
   );
 }

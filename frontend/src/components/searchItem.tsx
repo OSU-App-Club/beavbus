@@ -1,4 +1,4 @@
-import { Text, TextInput, StyleSheet, View, Pressable } from "react-native";
+import { Text, StyleSheet, Pressable } from "react-native";
 import { LocationResult } from "../scripts/onSearch";
 import { darkTheme } from "../constants/theme";
 import { useMapPin } from "../components/MapPinContext"; //import context file
@@ -17,7 +17,6 @@ export default function SearchItem({ item }: props) {
   address = address.slice(item.place_name.indexOf(", ") + 2);
 
   const handlePress = () => {
-    console.log(`pressed by coords: ${item.coordinates}`);
     setSelectedLocation(item); //set state of selectLocation
   }
   return (
