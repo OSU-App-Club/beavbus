@@ -18,8 +18,7 @@ export const lightTheme = {
     border: '#E0E0E0',
     switchTrackFalse: '#767577',
     switchThumb: '#f4f3f4',
-    busStopCardBgPressed: '#767577',
-    busStopCardBg: "#f8f8f8",
+
   }
 }
 
@@ -27,16 +26,14 @@ export const darkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: "#272727",
+    background: "#1f242c",
     text: "#ffffff",
-    card: "#1c1c1c",
-    primary: '#cf7500ff',
+    card: "#1f242c",
+    primary: '#dd5318',
     success: "#1eff00ff",
     border: '#333333',
     switchTrackFalse: '#767577',
     switchThumb: '#f4f3f4',
-    busStopCardBgPressed: '#767577',
-    busStopCardBg: "#1c1c1c",
   }
 }
 

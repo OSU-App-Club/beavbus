@@ -1,52 +1,64 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import { View, StyleSheet, Text, Platform, TouchableOpacity } from "react-native";
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
+import { getBeavBusRoutes, getBeavBusVehiclePositions, useLocation } from "@/src/hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 
+//add func to GET mapPin LongLat from MapPinContext
+import { useMapPin } from "../components/MapPinContext";
 
 //Bus Map Colors
-const OSUStyle = [
+const newOSU = [
   {
     elementType: "geometry",
-    stylers: [{ color: "#323232" }],
+    stylers: [{ color: "#1f2a3d" }],
   },
   {
     elementType: "labels.text.fill",
-    stylers: [{ color: "#C67306" }],
+    stylers: [{ color: "#c6663a" }],
   },
   {
     elementType: "labels.text.stroke",
-    stylers: [{ color: "#754404" }],
+    stylers: [{ color: "#141414" }],
   },
   {
     featureType: "road",
     elementType: "geometry",
-    stylers: [{ color: "#000000" }],
+    stylers: [{ color: "#394f6b" }],
   },
   {
     featureType: "water",
     elementType: "geometry",
-    stylers: [{ color: "#967d5d" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#000000" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#C67306" }],
-  },
+    stylers: [{ color: "#4d7d90" }],
+  }
 ];
 
 export default function HomeScreen() {
 
   const mapRef = useRef<MapView | null>(null);
+
+  //get the current state from selectLocation state variable (from context)
+  const {selectedLocation} = useMapPin(); 
+
+  //useEffect hook to trigger on change of selectLocation (from context!)
+  useEffect(() => {
+    if(selectedLocation && mapRef.current){
+      const [lng, lat] = selectedLocation.coordinates;
+      mapRef.current.animateCamera(
+        {
+          center: {
+            latitude: lat,
+            longitude: lng,
+          },
+          zoom: 15,
+        },
+        { duration: 500 }
+      );
+    }
+  },[selectedLocation]);
 
 //Temp mocked stops until we utilize API data
 const mockStops = [
@@ -56,14 +68,15 @@ const mockStops = [
 ];
 
   const { location, loading, error } = useLocation();
-  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
-  const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
-  const { routes } = getBusRoutes();
+  const { vehicles, refresh } = getBeavBusVehiclePositions();
+  const { routes } = getBeavBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
-  const ctsRouteIcon = require('../assets/images/ctsBusMarker.svg');
-  const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
+  // Icon for each route
+  //const route54 = require('../assets/images/blue.png');
+  //const route49 = require('../assets/images/yellow.png');
+  //const route55 = require('../assets/images/green.png');
 
   //Update routes
   const drawableRoutes = (routes ?? [])
@@ -76,10 +89,7 @@ const mockStops = [
 
   // Update bus coordinates
   useEffect(() => {
-    if (!(beavBusVehicles && ctsVehicles)) return;
-
-    let vehicles = beavBusVehicles.map(v => {v.FromService = "OSU"; return v});
-    vehicles = vehicles.concat(ctsVehicles.map(v => {v.FromService = "CTS"; return v}));
+    if (!vehicles) return;
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -114,16 +124,16 @@ const mockStops = [
       };
     });
     setBuses(updatedBuses);
-  }, [beavBusVehicles, ctsVehicles]);
+  }, [vehicles]);
 
   // Refresh bus positions every second
   useEffect(() => {
     const interval = setInterval(() => {
-      beavBusRefresh();
-      ctsRefresh();
+      refresh();
     }, 500);
     return () => clearInterval(interval);
-  }, [beavBusRefresh, ctsRefresh]);
+  }, [refresh]);
+  
 
   if (loading) {
     return (
@@ -152,14 +162,14 @@ const mockStops = [
     <>  
       <AlertsButton />
       <View style={styles.container}>
-        {(buses === null) && (
+        {vehicles === null && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
           ref={mapRef}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
-          customMapStyle={OSUStyle}
+          customMapStyle={newOSU}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -170,11 +180,20 @@ const mockStops = [
           showsMyLocationButton={false}
           showsTraffic={true}
         >
+          {selectedLocation && (
+          <Marker
+            coordinate={{
+              latitude: selectedLocation.coordinates[1],
+              longitude: selectedLocation.coordinates[0],
+            }}
+            title={selectedLocation.place_name}
+          />
+        )}
           {buses.map((bus) => (
             <MarkerAnimated
               key={bus.id}
               coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-              image={bus.FromService == "OSU" ? osuRouteIcon : ctsRouteIcon}
+              image={bus.routeId === 49 ? route49 : bus.routeId === 55 ? route55 : route54}
             />
           ))}
           {drawableRoutes.map((route) => (
@@ -182,7 +201,6 @@ const mockStops = [
               key={route.key}
               coordinates={route.coordinates}
               strokeColor={route.color}
-              fillColor={route.color}
               strokeWidth={4}
             />
           ))}
@@ -251,7 +269,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     left: 20,
-    backgroundColor: "#C67306",
+    backgroundColor: "#dd5318",
     padding: 14,
     borderRadius: 50,
     elevation: 6,
