@@ -1,4 +1,5 @@
 import Fuse from 'fuse.js'
+import Constants from 'expo-constants';
 
 export interface LocationResult {
     id: string;
@@ -24,7 +25,7 @@ export async function getLocations(searchText: string) {
     const METHOD = "geocoding"
     const QUERY = encodeURIComponent(searchText);
     const PARAMS = "bbox=-123.407399,44.527523,-123.185772,44.606607&types=poi"
-    const KEY = "fCIJiQ6Td63CAgVetC3q"
+    const KEY = Constants.expoConfig?.extra?.maptilerApiKey;
 
     const response = await fetch(`https://api.maptiler.com/${METHOD}/${QUERY}.json?${PARAMS}&key=${KEY}`)
 
