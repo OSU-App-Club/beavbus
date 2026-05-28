@@ -32,7 +32,7 @@ const style = StyleSheet.create({
     display: "flex",
     padding: 0,
     width: "100%",
-    backgroundColor: "#272727d6",
+    backgroundColor: "#272727e9",
     borderColor: darkTheme.colors.card,
   },
   text: {
