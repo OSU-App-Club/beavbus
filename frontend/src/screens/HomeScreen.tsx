@@ -55,8 +55,18 @@ export default function HomeScreen() {
 
   //useEffect hook to trigger on change of selectLocation (from context!)
   useEffect(() => {
-    if(selectedLocation){
-      console.log("Dropping pin...", selectedLocation?.coordinates)
+    if(selectedLocation && mapRef.current){
+      const [lng, lat] = selectedLocation.coordinates;
+      mapRef.current.animateCamera(
+        {
+          center: {
+            latitude: lat,
+            longitude: lng,
+          },
+          zoom: 15,
+        },
+        { duration: 500 }
+      );
     }
   },[selectedLocation]);
 
