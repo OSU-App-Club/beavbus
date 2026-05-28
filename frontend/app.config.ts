@@ -18,6 +18,10 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.beavbus.app",
+      config: {
+        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        maptilerApiKey: process.env.MAPTILER_API_KEY,
+      },
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           "BeavBus uses your location to show nearby places.",
@@ -34,8 +38,16 @@ export default {
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       config: {
-        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        googleMapsApiKey: {
+          apiKey: process.env.GOOGLE_MAPS_API_KEY,
+        },
+        maptilerApiKey: {
+          apiKey: process.env.MAPTILER_API_KEY,
+        },
       },
+    },
+    extra: {
+      maptilerApiKey: process.env.MAPTILER_API_KEY,
     },
     plugins: [
       [

@@ -8,6 +8,11 @@ import { useTheme } from "@react-navigation/native";
 export default function TopBar() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+
+  const dropPin = () => {
+
+  }
+
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.primary }]}>
       <Image
@@ -15,7 +20,7 @@ export default function TopBar() {
         style={[styles.logo, { borderColor: colors.border}]}
         fadeDuration={0}
       />
-      <SearchBar />
+      <SearchBar dropPin={dropPin}/>
     </View>
   );
 }

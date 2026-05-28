@@ -1,39 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextInput, StyleSheet, View, Button } from "react-native";
-import { borderRadius, spacing } from "../constants";
+import { borderRadius, spacing, darkTheme } from "../constants";
 import { useTheme } from "@react-navigation/native";
+import { getLocations, LocationResult } from "../scripts/onSearch";
+import SearchResults from "./SearchResults";
 
-import { getLocations } from "../scripts/onSearch";
 
 export default function SearchBar() {
-    const [text, onChangeText] = useState("");
-    const { colors } = useTheme();
+  const [text, onChangeText] = useState("");
+  const [locations, setLocations] = useState<LocationResult[]>([]);
+  const { colors } = useTheme();
 
-    return (
-        <View style={styles.container}>
-            <TextInput
-                style={[styles.input, {color: colors.text, backgroundColor: colors.background}]}
-                onChangeText={onChangeText}
-                value={text}
-                placeholder={"Search for a location..."}
-            />
-            <Button onPress={async () => {
-                await getLocations("");
-            }} title="Test Press">
-            </Button>
-        </View>
-    )
+  useEffect(() => {
+    const debounce = setTimeout(async () => {
+      if (text.length > 2) {
+        const result = await getLocations(text);
+        setLocations(result || []); //set the locations state variable with result
+      } else {
+        setLocations([]); 
+      }
+    }, 300); // debounce delay in ms
+    return () => clearTimeout(debounce);
+  }, [text]);
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={[
+          styles.input,
+          locations.length > 0 ? styles.inputHasText : styles.inputNoText,
+          { color: colors.text, backgroundColor: colors.background },
+        ]}
+        onChangeText={onChangeText}
+        value={text}
+        placeholder={"Search for a location..."}
+      />
+      <SearchResults locations={locations} onChangeText={onChangeText} /> {/*pass locations result to component*/}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        display: 'flex',
-        width: '85%',
-    },
-    input: {
-        padding: spacing.md,
-        width: 'auto',
-        flex: 1,
-        borderRadius: borderRadius.full,
-    }
-})
+  container: {
+    display: "flex",
+    width: "85%",
+    gap: 20,
+  },
+  input: {
+    padding: spacing.md,
+    width: "auto",
+    height: 50,
+    borderWidth: 1,
+    borderColor: darkTheme.colors.border,
+  },
+  inputHasText: {
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  inputNoText: {
+    borderRadius: borderRadius.full,
+  }
+});
