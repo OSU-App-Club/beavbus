@@ -8,6 +8,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./store/store";
 import { RootNavigator } from "./navigation";
 import { darkTheme, lightTheme } from "./constants";
+import PushNotifications from "./components/PushNotifications";
 
 export default function App() {
   const scheme = useColorScheme();
@@ -24,6 +25,7 @@ export default function App() {
         persistor={persistor}
       >
         <SafeAreaProvider>
+          <PushNotifications />
           <NavigationContainer theme={theme}>
             <StatusBar style="auto" />
             <RootNavigator />
