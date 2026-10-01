@@ -7,6 +7,8 @@ import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 
+//add func to GET mapPin LongLat from MapPinContext
+import { useMapPin } from "../components/MapPinContext";
 
 //Bus Map Colors
 const OSUStyle = [
@@ -47,6 +49,26 @@ const OSUStyle = [
 export default function HomeScreen() {
 
   const mapRef = useRef<MapView | null>(null);
+
+  //get the current state from selectLocation state variable (from context)
+  const {selectedLocation} = useMapPin(); 
+
+  //useEffect hook to trigger on change of selectLocation (from context!)
+  useEffect(() => {
+    if(selectedLocation && mapRef.current){
+      const [lng, lat] = selectedLocation.coordinates;
+      mapRef.current.animateCamera(
+        {
+          center: {
+            latitude: lat,
+            longitude: lng,
+          },
+          zoom: 15,
+        },
+        { duration: 500 }
+      );
+    }
+  },[selectedLocation]);
 
 //Temp mocked stops until we utilize API data
 const mockStops = [
@@ -170,6 +192,15 @@ const mockStops = [
           showsMyLocationButton={false}
           showsTraffic={true}
         >
+          {selectedLocation && (
+          <Marker
+            coordinate={{
+              latitude: selectedLocation.coordinates[1],
+              longitude: selectedLocation.coordinates[0],
+            }}
+            title={selectedLocation.place_name}
+          />
+        )}
           {buses.map((bus) => (
             <MarkerAnimated
               key={bus.id}
