@@ -28,13 +28,21 @@ export function useLocation(): UseLocationResult {
         return;
       }
 
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
+      let currentLocation: Location.LocationObject | null = null;
+      try {
+        currentLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+      } catch {
+        currentLocation = await Location.getLastKnownPositionAsync();
+        if (!currentLocation) {
+          setError("Unable to obtain current location");
+        }
+      }
 
       setLocation(currentLocation);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to get location");
+    } catch {
+      setError("Unable to obtain current location");
     } finally {
       setLoading(false);
     }

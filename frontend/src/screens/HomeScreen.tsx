@@ -15,11 +15,11 @@ export default function HomeScreen() {
   const mapRef = useRef<MapView | null>(null);
 
   //get the current state from selectLocation state variable (from context)
-  const {selectedLocation} = useMapPin(); 
+  const { selectedLocation } = useMapPin();
 
   //useEffect hook to trigger on change of selectLocation (from context!)
   useEffect(() => {
-    if(selectedLocation && mapRef.current){
+    if (selectedLocation && mapRef.current) {
       const [lng, lat] = selectedLocation.coordinates;
       mapRef.current.animateCamera(
         {
@@ -32,14 +32,14 @@ export default function HomeScreen() {
         { duration: 500 }
       );
     }
-  },[selectedLocation]);
+  }, [selectedLocation]);
 
-//Temp mocked stops until we utilize API data
-const mockStops = [
-  { id: "1", latitude: 44.5650, longitude: -123.2780 },
-  { id: "2", latitude: 44.5635, longitude: -123.2755 },
-  { id: "3", latitude: 44.5620, longitude: -123.2730 },
-];
+  //Temp mocked stops until we utilize API data
+  const mockStops = [
+    { id: "1", latitude: 44.5650, longitude: -123.2780 },
+    { id: "2", latitude: 44.5635, longitude: -123.2755 },
+    { id: "3", latitude: 44.5620, longitude: -123.2730 },
+  ];
 
   const { location, loading, error } = useLocation();
   const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
@@ -53,26 +53,26 @@ const mockStops = [
 
   //Update routes
   const drawableRoutes = (routes ?? [])
-  .map((route, index) => ({
-    key: `${route.Description}-${index}`,
-    color: route.MapLineColor || "#000000",
-    coordinates: route.linePoints || [],
-  }))
-  .filter((r) => r.coordinates.length > 1);
+    .map((route, index) => ({
+      key: `${route.Description}-${index}`,
+      color: route.MapLineColor || "#000000",
+      coordinates: route.linePoints || [],
+    }))
+    .filter((r) => r.coordinates.length > 1);
 
   // Update bus coordinates
   useEffect(() => {
     if (!(beavBusVehicles && ctsVehicles)) return;
 
-    let vehicles = beavBusVehicles.map(v => {v.FromService = "OSU"; return v});
-    vehicles = vehicles.concat(ctsVehicles.map(v => {v.FromService = "CTS"; return v}));
+    let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
+    vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
       const routeId = vehicle.RouteID;
 
       // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
-      
+
       if (!busCoordsRef.current[id]) {
         busCoordsRef.current[id] = new AnimatedRegion({
           latitude: vehicle.Latitude,
@@ -119,50 +119,47 @@ const mockStops = [
     );
   }
 
-  if (error) {
-    return (
-      <ThemedView style={styles.loadingContainer}>
-        <ThemedText>Error: {error}</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  if (!location) {
-    return (
-      <ThemedView style={styles.loadingContainer}>
-        <ThemedText>Unable to get location</ThemedText>
-      </ThemedView>
-    );
-  }
   return (
-    <>  
+    <>
       <AlertsButton />
       <View style={styles.container}>
+        {(!location || error) && (
+          <ThemedText style={styles.warn}>Warning: {error || "Unable to get location"}</ThemedText>
+        )}
         {(buses === null) && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
         <MapView
           ref={mapRef}
           style={styles.map}
-          initialRegion={{
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            latitudeDelta: 0.025,
-            longitudeDelta: 0.025,
-          }}
-          showsUserLocation={true}
+          initialRegion={
+            location
+              ? {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.025,
+                longitudeDelta: 0.025,
+              }
+              : {
+                latitude: 44.5638,
+                longitude: -123.2794,
+                latitudeDelta: 0.025,
+                longitudeDelta: 0.025,
+              }
+          }
+          showsUserLocation={!!location}
           showsMyLocationButton={false}
           showsTraffic={true}
         >
           {selectedLocation && (
-          <Marker
-            coordinate={{
-              latitude: selectedLocation.coordinates[1],
-              longitude: selectedLocation.coordinates[0],
-            }}
-            title={selectedLocation.place_name}
-          />
-        )}
+            <Marker
+              coordinate={{
+                latitude: selectedLocation.coordinates[1],
+                longitude: selectedLocation.coordinates[0],
+              }}
+              title={selectedLocation.place_name}
+            />
+          )}
           {buses.map((bus) => (
             <MarkerAnimated
               key={bus.id}
@@ -180,24 +177,24 @@ const mockStops = [
             />
           ))}
           {mockStops.map((stop) => (
-          <Marker
-            key={stop.id}
-            coordinate={{
-              latitude: stop.latitude,
-              longitude: stop.longitude,
-            }}
-          >
-          <ThemedView
-             style={{
-              width: 16,
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: "rgb(219, 104, 10)",
-              borderWidth: 1.5,
-              borderColor: "black",
+            <Marker
+              key={stop.id}
+              coordinate={{
+                latitude: stop.latitude,
+                longitude: stop.longitude,
               }}
-            />
-          </Marker>
+            >
+              <ThemedView
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 8,
+                  backgroundColor: "rgb(219, 104, 10)",
+                  borderWidth: 1.5,
+                  borderColor: "black",
+                }}
+              />
+            </Marker>
           ))}
         </MapView>
         <TouchableOpacity
@@ -213,6 +210,8 @@ const mockStops = [
                 },
                 500
               );
+            } else {
+              Alert.alert("Location Warning", "Unable to determine your current location.");
             }
           }}
         >
