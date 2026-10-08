@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
-import MapView, { PROVIDER_GOOGLE, AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
+import MapView, { AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
 import AlertsButton from "../components/AlertsButton";
@@ -9,42 +9,6 @@ import ThemedText from "../components/ThemedText";
 
 //add func to GET mapPin LongLat from MapPinContext
 import { useMapPin } from "../components/MapPinContext";
-
-//Bus Map Colors
-const OSUStyle = [
-  {
-    elementType: "geometry",
-    stylers: [{ color: "#323232" }],
-  },
-  {
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#C67306" }],
-  },
-  {
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#754404" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#000000" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#967d5d" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#000000" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#C67306" }],
-  },
-];
 
 export default function HomeScreen() {
 
@@ -180,8 +144,6 @@ const mockStops = [
         <MapView
           ref={mapRef}
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={OSUStyle}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,

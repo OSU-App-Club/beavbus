@@ -10,10 +10,11 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     icon: "./src/assets/images/logo.png",
-    "extra": {
-      "eas": {
-        "projectId": "fcd4fcbc-0b39-4c77-ad44-f9df780ac06f"
-      }
+    extra: {
+      eas: {
+        projectId: "fcd4fcbc-0b39-4c77-ad44-f9df780ac06f",
+      },
+      maptilerApiKey: process.env.MAPTILER_API_KEY,
     },
     ios: {
       supportsTablet: true,
@@ -45,9 +46,6 @@ export default {
           apiKey: process.env.MAPTILER_API_KEY,
         },
       },
-    },
-    extra: {
-      maptilerApiKey: process.env.MAPTILER_API_KEY,
     },
     plugins: [
       [
