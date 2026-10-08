@@ -15,9 +15,10 @@ export default function App() {
   const scheme = useColorScheme();
   const theme = scheme === "dark" ? darkTheme : lightTheme;
 
+  // add global-context by wrapping entire app
   return (
-    <MapPinProvider> {/*add global-context by wrapping entire app*/}
-    <Provider store={store}>
+    <MapPinProvider>
+      <Provider store={store}>
       <PersistGate
         loading={
           <View style={styles.loadingContainer}>
