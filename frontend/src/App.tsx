@@ -1,6 +1,6 @@
 import { ActivityIndicator, View, StyleSheet, useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from "expo-router/react-navigation";
 import { StatusBar } from "expo-status-bar";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -15,9 +15,10 @@ export default function App() {
   const scheme = useColorScheme();
   const theme = scheme === "dark" ? darkTheme : lightTheme;
 
+  // add global-context by wrapping entire app
   return (
-    <MapPinProvider> {/*add global-context by wrapping entire app*/}
-    <Provider store={store}>
+    <MapPinProvider>
+      <Provider store={store}>
       <PersistGate
         loading={
           <View style={styles.loadingContainer}>

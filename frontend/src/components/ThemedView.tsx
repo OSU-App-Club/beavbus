@@ -1,6 +1,6 @@
 import React from "react";
 import { View, ViewProps } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 
 export default function ThemedView({style, children, ...rest}: ViewProps) {

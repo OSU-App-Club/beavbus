@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch, SwitchProps } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 
 type ThemedSwitchProps = SwitchProps & {
