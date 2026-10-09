@@ -2,7 +2,7 @@ import { Image, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { spacing, borderRadius } from "../constants";
 import SearchBar from "./SearchBar";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 
 export default function TopBar() {

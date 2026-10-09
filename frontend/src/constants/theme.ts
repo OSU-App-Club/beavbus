@@ -3,7 +3,7 @@
  * Provides consistent styling across the application
  */
 
-import { DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { DefaultTheme, DarkTheme } from "expo-router/react-navigation";
 
 
 export const lightTheme = {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, StyleSheet, TextProps } from "react-native";
 import { typography } from "../constants";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 
 type ThemedTextProps = TextProps & { variant?: "body" | "title" | "label", color?: string };

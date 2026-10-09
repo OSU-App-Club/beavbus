@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { TextInput, StyleSheet, View, Button } from "react-native";
 import { borderRadius, spacing, darkTheme } from "../constants";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { getLocations, LocationResult } from "../scripts/onSearch";
 import SearchResults from "./SearchResults";
 

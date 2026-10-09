@@ -1,4 +1,4 @@
-import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { BottomTabScreenProps } from "expo-router/js-tabs";
 
 export type RootBottomTabParamList = {
   HomeTab: undefined;
@@ -11,9 +11,3 @@ export type HomeTabScreenProps = BottomTabScreenProps<
   RootBottomTabParamList,
   "HomeTab"
 >;
-
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootBottomTabParamList {}
-  }
-}

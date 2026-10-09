@@ -48,6 +48,7 @@ export default {
       },
     },
     plugins: [
+      "expo-router",
       [
         "react-native-maps",
         {
