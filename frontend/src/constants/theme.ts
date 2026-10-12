@@ -40,6 +40,41 @@ export const darkTheme = {
   }
 }
 
+export const OSUStyle = [
+  {
+    elementType: "geometry",
+    stylers: [{ color: "#323232" }],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#C67306" }],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#754404" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#967d5d" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#C67306" }],
+  },
+];
+
 export const spacing = {
   xs: 4,
   sm: 6,
