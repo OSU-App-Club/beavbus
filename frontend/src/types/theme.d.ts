@@ -1,6 +1,6 @@
-import '@react-navigation/native';
+import "expo-router/react-navigation";
 
-declare module '@react-navigation/native' {
+declare module 'expo-router/react-navigation' {
     export type ExtendedTheme = {
         dark: boolean;
         colors: {

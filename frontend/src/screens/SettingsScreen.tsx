@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import ThemedText from "../components/ThemedText";
 import ThemedView from "../components/ThemedView";
 import ThemedSwitch from "../components/ThemedSwitch";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 
 

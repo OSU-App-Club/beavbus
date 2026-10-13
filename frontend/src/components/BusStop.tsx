@@ -1,5 +1,5 @@
 import {Text, View, Pressable, StyleSheet} from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import ThemedText from "./ThemedText";
 import ThemedView from "./ThemedView";
 import { borderRadius } from "../constants";

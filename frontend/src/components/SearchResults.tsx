@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, SafeAreaView, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { LocationResult } from "../scripts/onSearch";
 import SearchItem from "./searchItem";
 import { Dispatch, SetStateAction } from "react";

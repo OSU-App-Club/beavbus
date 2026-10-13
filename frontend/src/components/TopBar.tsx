@@ -2,16 +2,12 @@ import { Image, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { spacing, borderRadius } from "../constants";
 import SearchBar from "./SearchBar";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 
 export default function TopBar() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-
-  const dropPin = () => {
-
-  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.primary }]}>
@@ -20,7 +16,7 @@ export default function TopBar() {
         style={[styles.logo, { borderColor: colors.border}]}
         fadeDuration={0}
       />
-      <SearchBar dropPin={dropPin}/>
+      <SearchBar />
     </View>
   );
 }

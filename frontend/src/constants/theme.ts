@@ -3,7 +3,7 @@
  * Provides consistent styling across the application
  */
 
-import { DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { DefaultTheme, DarkTheme } from "expo-router/react-navigation";
 
 
 export const lightTheme = {
@@ -39,6 +39,41 @@ export const darkTheme = {
     busStopCardBg: "#1c1c1c",
   }
 }
+
+export const OSUStyle = [
+  {
+    elementType: "geometry",
+    stylers: [{ color: "#323232" }],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#C67306" }],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#754404" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#967d5d" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#000000" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#C67306" }],
+  },
+];
 
 export const spacing = {
   xs: 4,
