@@ -26,7 +26,7 @@ export default function SettingsScreen() {
 
       <ThemedText style={styles.settings} variant="title">Map:</ThemedText>
 
-      <ThemedText>Use WebView + Leaflet/OSM map</ThemedText>
+      <ThemedText>Use OpenStreetMap</ThemedText>
       <View style={styles.toggles}>
         <ThemedSwitch
           onValueChange={leafletMapToggle}
