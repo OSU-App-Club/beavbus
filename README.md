@@ -2,15 +2,19 @@
 
 ## Get started
 
-1. **Get a Google Maps API key**
+1. **Get a Maptiler API Key** 
+   
+   *This is 100% free to use.*
 
-   - Go to the [_APIs & Services: Credentials_ page in Google Cloud Console](https://console.cloud.google.com/apis/credentials) _-> Create credentials -> API key_
+   - Go to https://www.maptiler.com/ 
 
-   - You can optionally leave the defaults then click _Create_.
+   - Create an Account 
+   - Once logged in -> Select 'API Keys' from the left-hand column.
+   - Select 'New Key' -> name your key, and leave all other fields blank. 
+   - Copy your API key
+   - Back in your editor, create a new file under the main folder `beavbus`, called `.env`. Then following the example in the `.env.example` file, add your copied Maptiler API key to your new `.env` file. 
 
-   * Copy your API key and add it to a new `.env` file in `frontend/` following the example in the `.env.example` file.
-
-   Note: This key should remain private. If it's pushed to a repository or shared online, you should delete it from the Google Cloud Console and create a new one.
+   Note: This key should remain private. If it's pushed to a repository or shared online, you should delete it from the Maptiler API Key Console and create a new one.
 
 2. **Install dependencies**
 
