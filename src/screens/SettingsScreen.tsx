@@ -26,8 +26,8 @@ export default function SettingsScreen() {
 
       <ThemedText style={styles.settings} variant="title">Map:</ThemedText>
 
-      <ThemedText>Use OpenStreetMap</ThemedText>
-      <View style={styles.toggles}>
+      <View style={styles.row}>
+        <ThemedText>Use OpenStreetMap</ThemedText>
         <ThemedSwitch
           onValueChange={leafletMapToggle}
           value={useLeafletMap}
@@ -36,17 +36,16 @@ export default function SettingsScreen() {
 
       <ThemedText style={styles.settings} variant="title">Notifications:</ThemedText>
 
-      <ThemedText>Notify me when bus is near saved stop</ThemedText>
-      <View style={styles.toggles}>
+      <View style={styles.row}>
+        <ThemedText>Notify me when bus is near saved stop</ThemedText>
         <ThemedSwitch
           onValueChange={busNearNotification}
           value={isToggle1enabled}
         />
       </View>
 
-
-      <ThemedText>Notify me when there are delays</ThemedText>
-      <View style={styles.toggles}>
+      <View style={styles.row}>
+        <ThemedText>Notify me when there are delays</ThemedText>
         <ThemedSwitch
           onValueChange={delaysNotification}
           value={isToggle2enabled}
@@ -55,9 +54,8 @@ export default function SettingsScreen() {
 
 
       <ThemedText style={styles.settings} variant="title">Analytics:</ThemedText>
-
-      <ThemedText>Report my usage to Google Analytics</ThemedText>
-      <View style={styles.toggles}>
+      <View style={styles.row}>
+        <ThemedText>Report my usage to Google Analytics</ThemedText>
         <ThemedSwitch
           onValueChange={reportAnalytics}
           value={isToggle3enabled}
@@ -74,12 +72,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 
-  toggles: {
-    paddingTop: 15,
-    paddingBottom: 50,
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderBottomColor: 'rgba(128, 128, 128, 0.25)',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+
   },
 
   settings: {
+    paddingTop: 24,
     paddingBottom: 10,
   }
 });
