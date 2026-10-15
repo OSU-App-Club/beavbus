@@ -1,18 +1,21 @@
-import React, { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import MapView, { AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
 import AlertsButton from "../components/AlertsButton";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
+import LeafletMapView from "../components/LeafletMapView";
+import { useAppSelector } from "../store/hooks";
+import { selectUseLeafletMap } from "../store/slices/mapSlice";
 
 //add func to GET mapPin LongLat from MapPinContext
 import { useMapPin } from "../components/MapPinContext";
 
 export default function HomeScreen() {
-
-  const mapRef = useRef<MapView | null>(null);
+  const mapRef = useRef<any>(null);
+  const useLeafletMap = useAppSelector(selectUseLeafletMap);
 
   //get the current state from selectLocation state variable (from context)
   const { selectedLocation } = useMapPin();
@@ -35,11 +38,14 @@ export default function HomeScreen() {
   }, [selectedLocation]);
 
   //Temp mocked stops until we utilize API data
-  const mockStops = [
-    { id: "1", latitude: 44.5650, longitude: -123.2780 },
-    { id: "2", latitude: 44.5635, longitude: -123.2755 },
-    { id: "3", latitude: 44.5620, longitude: -123.2730 },
-  ];
+  const mockStops = useMemo(
+    () => [
+      { id: "1", latitude: 44.5650, longitude: -123.2780 },
+      { id: "2", latitude: 44.5635, longitude: -123.2755 },
+      { id: "3", latitude: 44.5620, longitude: -123.2730 },
+    ],
+    []
+  );
 
   const { location, loading, error } = useLocation();
   const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
@@ -52,13 +58,17 @@ export default function HomeScreen() {
   const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
 
   //Update routes
-  const drawableRoutes = (routes ?? [])
-    .map((route, index) => ({
-      key: `${route.Description}-${index}`,
-      color: route.MapLineColor || "#000000",
-      coordinates: route.linePoints || [],
-    }))
-    .filter((r) => r.coordinates.length > 1);
+  const drawableRoutes = useMemo(
+    () =>
+      (routes ?? [])
+        .map((route, index) => ({
+          key: `${route.Description}-${index}`,
+          color: route.MapLineColor || "#000000",
+          coordinates: route.linePoints || [],
+        }))
+        .filter((r) => r.coordinates.length > 1),
+    [routes]
+  );
 
   // Update bus coordinates
   useEffect(() => {
@@ -72,7 +82,6 @@ export default function HomeScreen() {
       const routeId = vehicle.RouteID;
 
       // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
-
       if (!busCoordsRef.current[id]) {
         busCoordsRef.current[id] = new AnimatedRegion({
           latitude: vehicle.Latitude,
@@ -93,6 +102,8 @@ export default function HomeScreen() {
       return {
         id,
         routeId,
+        fromService: vehicle.FromService,
+        FromService: vehicle.FromService,
         coordinate: {
           latitude: vehicle.Latitude,
           longitude: vehicle.Longitude,
@@ -102,7 +113,7 @@ export default function HomeScreen() {
     setBuses(updatedBuses);
   }, [beavBusVehicles, ctsVehicles]);
 
-  // Refresh bus positions every second
+  // Refresh bus positions every 500ms
   useEffect(() => {
     const interval = setInterval(() => {
       beavBusRefresh();
@@ -129,74 +140,87 @@ export default function HomeScreen() {
         {(buses === null) && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          initialRegion={
-            location
-              ? {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.025,
-                longitudeDelta: 0.025,
+
+        {(() => {
+          const MapComponent = (useLeafletMap ? LeafletMapView : MapView) as any;
+          return (
+            <MapComponent
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={
+                location
+                  ? {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
+                  }
+                  : {
+                    latitude: 44.5638,
+                    longitude: -123.2794,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
+                  }
               }
-              : {
-                latitude: 44.5638,
-                longitude: -123.2794,
-                latitudeDelta: 0.025,
-                longitudeDelta: 0.025,
-              }
-          }
-          showsUserLocation={!!location}
-          showsMyLocationButton={false}
-          showsTraffic={true}
-        >
-          {selectedLocation && (
-            <Marker
-              coordinate={{
-                latitude: selectedLocation.coordinates[1],
-                longitude: selectedLocation.coordinates[0],
-              }}
-              title={selectedLocation.place_name}
-            />
-          )}
-          {buses.map((bus) => (
-            <MarkerAnimated
-              key={bus.id}
-              coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-              image={bus.FromService == "OSU" ? osuRouteIcon : ctsRouteIcon}
-            />
-          ))}
-          {drawableRoutes.map((route) => (
-            <Polyline
-              key={route.key}
-              coordinates={route.coordinates}
-              strokeColor={route.color}
-              fillColor={route.color}
-              strokeWidth={4}
-            />
-          ))}
-          {mockStops.map((stop) => (
-            <Marker
-              key={stop.id}
-              coordinate={{
-                latitude: stop.latitude,
-                longitude: stop.longitude,
-              }}
+              showsUserLocation={!!location}
+              location={location}
+              selectedLocation={selectedLocation}
+              buses={buses}
+              routes={drawableRoutes}
+              stops={mockStops}
+              showsMyLocationButton={false}
+              showsTraffic={true}
             >
-              <ThemedView
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 8,
-                  backgroundColor: "rgb(219, 104, 10)",
-                  borderWidth: 1.5,
-                  borderColor: "black",
-                }}
-              />
-            </Marker>
-          ))}
-        </MapView>
+              {selectedLocation && (
+                <Marker
+                  coordinate={{
+                    latitude: selectedLocation.coordinates[1],
+                    longitude: selectedLocation.coordinates[0],
+                  }}
+                  title={selectedLocation.place_name}
+                />
+              )}
+              {/* eslint-disable-next-line react-hooks/refs */}
+              {buses.map((bus) => (
+                <MarkerAnimated
+                  key={bus.id}
+                  coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
+                  image={bus.FromService === "OSU" ? osuRouteIcon : ctsRouteIcon}
+                />
+              ))}
+              {drawableRoutes.map((route) => (
+                <Polyline
+                  key={route.key}
+                  coordinates={route.coordinates}
+                  strokeColor={route.color}
+                  fillColor={route.color}
+                  strokeWidth={4}
+                />
+              ))}
+              {mockStops.map((stop) => (
+                <Marker
+                  key={stop.id}
+                  coordinate={{
+                    latitude: stop.latitude,
+                    longitude: stop.longitude,
+                  }}
+                >
+                  <ThemedView
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: 8,
+                      backgroundColor: "rgb(219, 104, 10)",
+                      borderWidth: 1.5,
+                      borderColor: "black",
+                    }}
+                  />
+                </Marker>
+              ))}
+            </MapComponent>
+          );
+        })()}
+
         <TouchableOpacity
           style={styles.myLocationButton}
           onPress={() => {
@@ -238,7 +262,6 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-
   myLocationButton: {
     position: "absolute",
     top: 20,

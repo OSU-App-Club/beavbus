@@ -12,15 +12,17 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import savedRoutesReducer from "./slices/savedRoutesSlice";
+import mapReducer from "./slices/mapSlice";
 
 const rootReducer = combineReducers({
   savedRoutes: savedRoutesReducer,
+  map: mapReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["savedRoutes"],
+  whitelist: ["savedRoutes", "map"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
