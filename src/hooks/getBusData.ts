@@ -247,7 +247,6 @@ export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
             );
 
             const d = await res.json();
-            console.log(d)
             const data: Vehicle[] = [];
             for (const bus of d) {
                 let v: Vehicle = {
