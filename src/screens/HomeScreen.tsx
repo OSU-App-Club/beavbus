@@ -126,9 +126,7 @@ export default function HomeScreen() {
       </ThemedView>
     );
   }
-
-  // FIXME: remove when done, useful log for checking if bus data was built successfully above ^
-  // console.log("buses in HC:", buses);
+  
   return (
     <>
       <AlertsButton />
