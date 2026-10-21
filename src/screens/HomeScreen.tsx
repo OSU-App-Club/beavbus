@@ -48,6 +48,7 @@ export default function HomeScreen() {
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
+  //FIXME: temporarily using 'bus.png' -> SVG's dont seem to work currently.
   const ctsRouteIcon = require('../assets/images/bus.png');
   const osuRouteIcon = require('../assets/images/bus.png');
 
@@ -62,9 +63,10 @@ export default function HomeScreen() {
 
   // Update bus coordinates
   useEffect(() => {
-    //fixme
-    if (!(beavBusVehicles || ctsVehicles)) return; //exits when BOTH sources failed FIXME: should this be temp?
+    //FIXME: changed '&&' to '||', now returns only when BOTH sources fail, not just one. May revert later?
+    if (!(beavBusVehicles || ctsVehicles)) return;
 
+    //FIXME: old implementation, minor change below explained
     //   let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
     //   vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
     
@@ -72,8 +74,6 @@ export default function HomeScreen() {
     // This allows us to render/set vehicles, even if one of Vehicles obj is null. 
     let vehicles = (beavBusVehicles ?? []).map(v => { v.FromService = "OSU"; return v });
     vehicles = vehicles.concat((ctsVehicles ?? []).map(v => { v.FromService = "CTS"; return v }));
-
-
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -127,7 +127,8 @@ export default function HomeScreen() {
     );
   }
 
-  console.log("buses in HC:", buses);
+  // FIXME: remove when done, useful log for checking if bus data was built successfully above ^
+  // console.log("buses in HC:", buses);
   return (
     <>
       <AlertsButton />
