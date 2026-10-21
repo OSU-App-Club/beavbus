@@ -48,8 +48,8 @@ export default function HomeScreen() {
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
-  const ctsRouteIcon = require('../assets/images/ctsBusMarker.svg');
-  const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
+  const ctsRouteIcon = require('../assets/images/bus.png');
+  const osuRouteIcon = require('../assets/images/bus.png');
 
   //Update routes
   const drawableRoutes = (routes ?? [])
@@ -62,10 +62,18 @@ export default function HomeScreen() {
 
   // Update bus coordinates
   useEffect(() => {
-    if (!(beavBusVehicles && ctsVehicles)) return;
+    //fixme
+    if (!(beavBusVehicles || ctsVehicles)) return; //exits when BOTH sources failed FIXME: should this be temp?
 
-    let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
-    vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
+    //   let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
+    //   vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
+    
+    //'??' nullish coalescing op, "use left side, unless right side is null or undef".
+    // This allows us to render/set vehicles, even if one of Vehicles obj is null. 
+    let vehicles = (beavBusVehicles ?? []).map(v => { v.FromService = "OSU"; return v });
+    vehicles = vehicles.concat((ctsVehicles ?? []).map(v => { v.FromService = "CTS"; return v }));
+
+
 
     const updatedBuses = vehicles.map(vehicle => {
       const id = `bus${vehicle.VehicleID}`;
@@ -119,6 +127,7 @@ export default function HomeScreen() {
     );
   }
 
+  console.log("buses in HC:", buses);
   return (
     <>
       <AlertsButton />
