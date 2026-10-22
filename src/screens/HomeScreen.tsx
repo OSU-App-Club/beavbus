@@ -1,12 +1,24 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
-import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import MapView, { AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import MapView, {
+  AnimatedRegion,
+  Marker,
+  MarkerAnimated,
+  Polyline,
+  Region,
+} from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
-import ThemedView from "../components/ThemedView";
-import ThemedText from "../components/ThemedText";
 import LeafletMapView from "../components/LeafletMapView";
+import ThemedText from "../components/ThemedText";
+import ThemedView from "../components/ThemedView";
+import {
+  getBeavBusVehiclePositions,
+  getBusRoutes,
+  getBusStops,
+  getCTSVehiclePositions,
+  useLocation,
+} from "../hooks";
 import { useAppSelector } from "../store/hooks";
 import { selectUseLeafletMap } from "../store/slices/mapSlice";
 
@@ -32,7 +44,7 @@ export default function HomeScreen() {
           },
           zoom: 15,
         },
-        { duration: 500 }
+        { duration: 500 },
       );
     }
   }, [selectedLocation]);
@@ -44,18 +56,32 @@ export default function HomeScreen() {
       { id: "2", latitude: 44.5635, longitude: -123.2755 },
       { id: "3", latitude: 44.5620, longitude: -123.2730 },
     ],
-    []
+    [],
   );
 
+  const BASE_SIZE = 12;
+  const BASE_ZOOM = 15;
+
   const { location, loading, error } = useLocation();
-  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
-  const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
+  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } =
+    getBeavBusVehiclePositions();
+  const { vehicles: ctsVehicles, refresh: ctsRefresh } =
+    getCTSVehiclePositions();
+  const { stops } = getBusStops();
   const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
+  const [markerSize, setMarkerSize] = useState(BASE_SIZE);
 
-  const ctsRouteIcon = require('../assets/images/ctsBusMarker.svg');
-  const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
+  const ctsRouteIcon = require("../assets/images/ctsBusMarker.svg");
+  const osuRouteIcon = require("../assets/images/osuBusMarker.svg");
+
+  function markerSizeFor(region: Region) {
+    const zoom = Math.log2(360 / region.longitudeDelta);
+    const size = BASE_SIZE * Math.pow(1.5, zoom - BASE_ZOOM);
+    // clamp, then snap to 4px steps so we don't re-render on every pinch frame
+    return Math.round(Math.min(64, Math.max(12, size)) / 4) * 4;
+  }
 
   //Update routes
   const drawableRoutes = useMemo(
@@ -67,17 +93,23 @@ export default function HomeScreen() {
           coordinates: route.linePoints || [],
         }))
         .filter((r) => r.coordinates.length > 1),
-    [routes]
+    [routes],
   );
 
   // Update bus coordinates
   useEffect(() => {
     if (!(beavBusVehicles && ctsVehicles)) return;
 
-    let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
-    vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
+    let vehicles = beavBusVehicles.map((v) => {
+      v.FromService = "OSU";
+      return v;
+    });
+    vehicles = vehicles.concat(ctsVehicles.map((v) => {
+      v.FromService = "CTS";
+      return v;
+    }));
 
-    const updatedBuses = vehicles.map(vehicle => {
+    const updatedBuses = vehicles.map((vehicle) => {
       const id = `bus${vehicle.VehicleID}`;
       const routeId = vehicle.RouteID;
 
@@ -135,41 +167,43 @@ export default function HomeScreen() {
       <AlertsButton />
       <View style={styles.container}>
         {(!location || error) && (
-          <ThemedText style={styles.warn}>Warning: {error || "Unable to get location"}</ThemedText>
+          <ThemedText style={styles.warn}>
+            Warning: {error || "Unable to get location"}
+          </ThemedText>
         )}
         {(buses === null) && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
 
         {(() => {
-          const MapComponent = (useLeafletMap ? LeafletMapView : MapView) as any;
+          const MapComponent =
+            (useLeafletMap ? LeafletMapView : MapView) as any;
           return (
             <MapComponent
               ref={mapRef}
               style={styles.map}
-              initialRegion={
-                location
-                  ? {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    latitudeDelta: 0.025,
-                    longitudeDelta: 0.025,
-                  }
-                  : {
-                    latitude: 44.5638,
-                    longitude: -123.2794,
-                    latitudeDelta: 0.025,
-                    longitudeDelta: 0.025,
-                  }
-              }
+              initialRegion={location
+                ? {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                }
+                : {
+                  latitude: 44.5638,
+                  longitude: -123.2794,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                }}
               showsUserLocation={!!location}
               location={location}
               selectedLocation={selectedLocation}
               buses={buses}
               routes={drawableRoutes}
-              stops={mockStops}
+              stops={stops}
               showsMyLocationButton={false}
               showsTraffic={true}
+              onRegionChange={(r: Region) => setMarkerSize(markerSizeFor(r))}
             >
               {selectedLocation && (
                 <Marker
@@ -185,7 +219,9 @@ export default function HomeScreen() {
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-                  image={bus.FromService === "OSU" ? osuRouteIcon : ctsRouteIcon}
+                  image={bus.FromService === "OSU"
+                    ? osuRouteIcon
+                    : ctsRouteIcon}
                 />
               ))}
               {drawableRoutes.map((route) => (
@@ -197,22 +233,23 @@ export default function HomeScreen() {
                   strokeWidth={4}
                 />
               ))}
-              {mockStops.map((stop) => (
+              {stops.map((stop) => (
                 <Marker
-                  key={stop.id}
+                  key={stop.StopID}
                   coordinate={{
-                    latitude: stop.latitude,
-                    longitude: stop.longitude,
+                    latitude: stop.Latitude,
+                    longitude: stop.Longitude,
                   }}
+                  anchor={{ x: 0.5, y: 0.5 }}
                 >
                   <ThemedView
                     style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 8,
+                      width: markerSize,
+                      height: markerSize,
                       backgroundColor: "rgb(219, 104, 10)",
                       borderWidth: 1.5,
                       borderColor: "black",
+                      borderRadius: 100,
                     }}
                   />
                 </Marker>
@@ -232,10 +269,13 @@ export default function HomeScreen() {
                   latitudeDelta: 0.01,
                   longitudeDelta: 0.01,
                 },
-                500
+                500,
               );
             } else {
-              Alert.alert("Location Warning", "Unable to determine your current location.");
+              Alert.alert(
+                "Location Warning",
+                "Unable to determine your current location.",
+              );
             }
           }}
         >
