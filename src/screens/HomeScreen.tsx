@@ -242,16 +242,26 @@ export default function HomeScreen() {
                   }}
                   anchor={{ x: 0.5, y: 0.5 }}
                 >
-                  <ThemedView
+                  <View
                     style={{
-                      width: markerSize,
-                      height: markerSize,
-                      backgroundColor: "rgb(219, 104, 10)",
-                      borderWidth: 1.5,
-                      borderColor: "black",
-                      borderRadius: 100,
+                      width: 64,
+                      height: 64,
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
-                  />
+                    collapsable={false}
+                  >
+                    <ThemedView
+                      style={{
+                        width: markerSize,
+                        height: markerSize,
+                        backgroundColor: "rgb(219, 104, 10)",
+                        borderWidth: 1.5,
+                        borderColor: "black",
+                        borderRadius: 100,
+                      }}
+                    />
+                  </View>
                 </Marker>
               ))}
             </MapComponent>
