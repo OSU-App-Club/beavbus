@@ -72,14 +72,13 @@ export default function HomeScreen() {
 
   // Update bus coordinates
   useEffect(() => {
-    if (!(beavBusVehicles && ctsVehicles)) return;
+    if (!(beavBusVehicles || ctsVehicles)) return;
 
-    let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
-    vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
+    let vehicles = beavBusVehicles?.map(v => { v.FromService = "OSU"; return v }) ?? [];
+    vehicles = vehicles.concat(ctsVehicles?.map(v => { v.FromService = "CTS"; return v }) ?? []);
 
     const updatedBuses = vehicles.map(vehicle => {
-      const id = `bus${vehicle.VehicleID}`;
-      const routeId = vehicle.RouteID;
+      const id = `${vehicle.FromService}-${vehicle.VehicleID}`;
 
       // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
       if (!busCoordsRef.current[id]) {
@@ -100,9 +99,8 @@ export default function HomeScreen() {
         }).start();
       }
       return {
-        id,
-        routeId,
-        fromService: vehicle.FromService,
+        id: id,
+        routeId: vehicle.RouteID,
         FromService: vehicle.FromService,
         coordinate: {
           latitude: vehicle.Latitude,
@@ -185,8 +183,19 @@ export default function HomeScreen() {
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-                  image={bus.FromService === "OSU" ? osuRouteIcon : ctsRouteIcon}
-                />
+                  // image={bus.FromService === "OSU" ? osuRouteIcon : ctsRouteIcon}
+                >
+                  <ThemedView
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: 8,
+                      backgroundColor: "rgb(113, 156, 255)",
+                      borderWidth: 1.5,
+                      borderColor: "black",
+                    }}
+                  />
+                </MarkerAnimated>
               ))}
               {drawableRoutes.map((route) => (
                 <Polyline

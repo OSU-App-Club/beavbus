@@ -49,7 +49,6 @@ export interface LeafletMapViewProps {
     id: string;
     routeId?: number;
     FromService?: "OSU" | "CTS" | string;
-    fromService?: "OSU" | "CTS" | string;
     coordinate: {
       latitude: number;
       longitude: number;
@@ -242,7 +241,7 @@ const buildLeafletHtml = (
         seen[id] = true;
         var lat = bus.coordinate.latitude;
         var lng = bus.coordinate.longitude;
-        var service = bus.FromService || bus.fromService || (id.indexOf('osu') !== -1 ? 'OSU' : 'CTS');
+        var service = bus.FromService || (id.indexOf('osu') !== -1 ? 'OSU' : 'CTS');
         var popupText = (service === 'OSU' ? 'OSU Beaver Bus' : 'CTS Bus') + (bus.routeId ? ' - Route ' + bus.routeId : '');
 
         if (busMarkers[id]) {
