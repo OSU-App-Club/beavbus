@@ -259,7 +259,7 @@ export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
                     IsOnRoute: false,
                     Latitude: bus.latitude,
                     Longitude: bus.longitude,
-                    FromService: ""
+                    FromService: "CTS"
                 }
                 data.push(v);
             }
