@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 const BASE_URL = "https://osushuttles.com";
-const CTS_BASE_URL = "https://arrive-monstrous-hazy-corvallisbus.itsjamie.dev";
+const CTS_BASE_URL = "https://beavbus-eke9ffaccpd9bmdg.westus3-01.azurewebsites.net";
 
 const decodePolyline = (encoded: string) => {
     let index = 0, len = encoded.length;
@@ -250,8 +250,8 @@ export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
             const data: Vehicle[] = [];
             for (const bus of d) {
                 let v: Vehicle = {
-                    VehicleID: +bus.busLabel,
-                    RouteID: bus.busLabel,
+                    VehicleID: +bus.id,
+                    RouteID: bus.label,
                     Seconds: 0,
                     Name: "",
                     GroundSpeed: bus.speed,
@@ -259,7 +259,7 @@ export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
                     IsOnRoute: false,
                     Latitude: bus.latitude,
                     Longitude: bus.longitude,
-                    FromService: ""
+                    FromService: "CTS"
                 }
                 data.push(v);
             }

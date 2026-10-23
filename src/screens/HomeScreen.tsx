@@ -1,12 +1,22 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
-import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import MapView, { AnimatedRegion, MarkerAnimated, Polyline, Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBusRoutes, getBeavBusVehiclePositions, getCTSVehiclePositions, useLocation } from "../hooks";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import MapView, {
+  AnimatedRegion,
+  Marker,
+  MarkerAnimated,
+  Polyline,
+} from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
-import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
+import ThemedView from "../components/ThemedView";
 import LeafletMapView from "../components/LeafletMapView";
+import {
+  getBeavBusVehiclePositions,
+  getBusRoutes,
+  getCTSVehiclePositions,
+  useLocation,
+} from "../hooks";
 import { useAppSelector } from "../store/hooks";
 import { selectUseLeafletMap } from "../store/slices/mapSlice";
 
@@ -32,7 +42,7 @@ export default function HomeScreen() {
           },
           zoom: 15,
         },
-        { duration: 500 }
+        { duration: 500 },
       );
     }
   }, [selectedLocation]);
@@ -40,22 +50,24 @@ export default function HomeScreen() {
   //Temp mocked stops until we utilize API data
   const mockStops = useMemo(
     () => [
-      { id: "1", latitude: 44.5650, longitude: -123.2780 },
+      { id: "1", latitude: 44.565, longitude: -123.278 },
       { id: "2", latitude: 44.5635, longitude: -123.2755 },
-      { id: "3", latitude: 44.5620, longitude: -123.2730 },
+      { id: "3", latitude: 44.562, longitude: -123.273 },
     ],
-    []
+    [],
   );
 
   const { location, loading, error } = useLocation();
-  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } = getBeavBusVehiclePositions();
-  const { vehicles: ctsVehicles, refresh: ctsRefresh } = getCTSVehiclePositions();
+  const { vehicles: beavBusVehicles, refresh: beavBusRefresh } =
+    getBeavBusVehiclePositions();
+  const { vehicles: ctsVehicles, refresh: ctsRefresh } =
+    getCTSVehiclePositions();
   const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
-  const ctsRouteIcon = require('../assets/images/ctsBusMarker.svg');
-  const osuRouteIcon = require('../assets/images/osuBusMarker.svg');
+  const ctsRouteIcon = require("../assets/images/bus.png");
+  const osuRouteIcon = require("../assets/images/bus.png");
 
   //Update routes
   const drawableRoutes = useMemo(
@@ -72,14 +84,23 @@ export default function HomeScreen() {
 
   // Update bus coordinates
   useEffect(() => {
-    if (!(beavBusVehicles && ctsVehicles)) return;
+    //Return only when BOTH sources fail
+    if (!(beavBusVehicles || ctsVehicles)) return;
 
-    let vehicles = beavBusVehicles.map(v => { v.FromService = "OSU"; return v });
-    vehicles = vehicles.concat(ctsVehicles.map(v => { v.FromService = "CTS"; return v }));
+    let vehicles =
+      beavBusVehicles?.map((v) => {
+        v.FromService = "OSU";
+        return v;
+      }) ?? [];
+    vehicles = vehicles.concat(
+      ctsVehicles?.map((v) => {
+        v.FromService = "CTS";
+        return v;
+      }) ?? [],
+    );
 
-    const updatedBuses = vehicles.map(vehicle => {
-      const id = `bus${vehicle.VehicleID}`;
-      const routeId = vehicle.RouteID;
+    const updatedBuses = vehicles.map((vehicle) => {
+      const id = `${vehicle.FromService}-${vehicle.VehicleID}`;
 
       // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
       if (!busCoordsRef.current[id]) {
@@ -90,19 +111,20 @@ export default function HomeScreen() {
           longitudeDelta: 0,
         });
       } else {
-        busCoordsRef.current[id].timing({
-          latitude: vehicle.Latitude,
-          longitude: vehicle.Longitude,
-          latitudeDelta: 0,
-          longitudeDelta: 0,
-          duration: 500,
-          useNativeDriver: false,
-        }).start();
+        busCoordsRef.current[id]
+          .timing({
+            latitude: vehicle.Latitude,
+            longitude: vehicle.Longitude,
+            latitudeDelta: 0,
+            longitudeDelta: 0,
+            duration: 500,
+            useNativeDriver: false,
+          })
+          .start();
       }
       return {
-        id,
-        routeId,
-        fromService: vehicle.FromService,
+        id: id,
+        routeId: vehicle.RouteID,
         FromService: vehicle.FromService,
         coordinate: {
           latitude: vehicle.Latitude,
@@ -135,9 +157,11 @@ export default function HomeScreen() {
       <AlertsButton />
       <View style={styles.container}>
         {(!location || error) && (
-          <ThemedText style={styles.warn}>Warning: {error || "Unable to get location"}</ThemedText>
+          <ThemedText style={styles.warn}>
+            Warning: {error || "Unable to get location"}
+          </ThemedText>
         )}
-        {(buses === null) && (
+        {buses === null && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
 
@@ -150,17 +174,17 @@ export default function HomeScreen() {
               initialRegion={
                 location
                   ? {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    latitudeDelta: 0.025,
-                    longitudeDelta: 0.025,
-                  }
+                      latitude: location.coords.latitude,
+                      longitude: location.coords.longitude,
+                      latitudeDelta: 0.025,
+                      longitudeDelta: 0.025,
+                    }
                   : {
-                    latitude: 44.5638,
-                    longitude: -123.2794,
-                    latitudeDelta: 0.025,
-                    longitudeDelta: 0.025,
-                  }
+                      latitude: 44.5638,
+                      longitude: -123.2794,
+                      latitudeDelta: 0.025,
+                      longitudeDelta: 0.025,
+                    }
               }
               showsUserLocation={!!location}
               location={location}
@@ -232,18 +256,17 @@ export default function HomeScreen() {
                   latitudeDelta: 0.01,
                   longitudeDelta: 0.01,
                 },
-                500
+                500,
               );
             } else {
-              Alert.alert("Location Warning", "Unable to determine your current location.");
+              Alert.alert(
+                "Location Warning",
+                "Unable to determine your current location.",
+              );
             }
           }}
         >
-          <MaterialIcons
-            name="my-location"
-            size={24}
-            color="white"
-          />
+          <MaterialIcons name="my-location" size={24} color="white" />
         </TouchableOpacity>
       </View>
     </>
