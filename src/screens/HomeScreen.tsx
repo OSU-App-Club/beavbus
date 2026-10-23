@@ -6,7 +6,7 @@ import MapView, {
   Marker,
   MarkerAnimated,
   Polyline,
-  Region,
+  Region
 } from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
 import LeafletMapView from "../components/LeafletMapView";
@@ -52,9 +52,9 @@ export default function HomeScreen() {
   //Temp mocked stops until we utilize API data
   const mockStops = useMemo(
     () => [
-      { id: "1", latitude: 44.5650, longitude: -123.2780 },
+      { id: "1", latitude: 44.565, longitude: -123.278 },
       { id: "2", latitude: 44.5635, longitude: -123.2755 },
-      { id: "3", latitude: 44.5620, longitude: -123.2730 },
+      { id: "3", latitude: 44.562, longitude: -123.273 },
     ],
     [],
   );
@@ -73,8 +73,8 @@ export default function HomeScreen() {
   const busCoordsRef = useRef<Record<string, any>>({});
   const [markerSize, setMarkerSize] = useState(BASE_SIZE);
 
-  const ctsRouteIcon = require("../assets/images/ctsBusMarker.svg");
-  const osuRouteIcon = require("../assets/images/osuBusMarker.svg");
+  const ctsRouteIcon = require("../assets/images/bus.png");
+  const osuRouteIcon = require("../assets/images/bus.png");
 
   function markerSizeFor(region: Region) {
     const zoom = Math.log2(360 / region.longitudeDelta);
@@ -98,20 +98,23 @@ export default function HomeScreen() {
 
   // Update bus coordinates
   useEffect(() => {
-    if (!(beavBusVehicles && ctsVehicles)) return;
+    //Return only when BOTH sources fail
+    if (!(beavBusVehicles || ctsVehicles)) return;
 
-    let vehicles = beavBusVehicles.map((v) => {
-      v.FromService = "OSU";
-      return v;
-    });
-    vehicles = vehicles.concat(ctsVehicles.map((v) => {
-      v.FromService = "CTS";
-      return v;
-    }));
+    let vehicles =
+      beavBusVehicles?.map((v) => {
+        v.FromService = "OSU";
+        return v;
+      }) ?? [];
+    vehicles = vehicles.concat(
+      ctsVehicles?.map((v) => {
+        v.FromService = "CTS";
+        return v;
+      }) ?? [],
+    );
 
     const updatedBuses = vehicles.map((vehicle) => {
-      const id = `bus${vehicle.VehicleID}`;
-      const routeId = vehicle.RouteID;
+      const id = `${vehicle.FromService}-${vehicle.VehicleID}`;
 
       // If we don't have a marker for this bus yet, create one. Otherwise, animate it to the new position.
       if (!busCoordsRef.current[id]) {
@@ -122,19 +125,20 @@ export default function HomeScreen() {
           longitudeDelta: 0,
         });
       } else {
-        busCoordsRef.current[id].timing({
-          latitude: vehicle.Latitude,
-          longitude: vehicle.Longitude,
-          latitudeDelta: 0,
-          longitudeDelta: 0,
-          duration: 500,
-          useNativeDriver: false,
-        }).start();
+        busCoordsRef.current[id]
+          .timing({
+            latitude: vehicle.Latitude,
+            longitude: vehicle.Longitude,
+            latitudeDelta: 0,
+            longitudeDelta: 0,
+            duration: 500,
+            useNativeDriver: false,
+          })
+          .start();
       }
       return {
-        id,
-        routeId,
-        fromService: vehicle.FromService,
+        id: id,
+        routeId: vehicle.RouteID,
         FromService: vehicle.FromService,
         coordinate: {
           latitude: vehicle.Latitude,
@@ -171,7 +175,7 @@ export default function HomeScreen() {
             Warning: {error || "Unable to get location"}
           </ThemedText>
         )}
-        {(buses === null) && (
+        {buses === null && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
 
@@ -182,19 +186,21 @@ export default function HomeScreen() {
             <MapComponent
               ref={mapRef}
               style={styles.map}
-              initialRegion={location
-                ? {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                  latitudeDelta: 0.025,
-                  longitudeDelta: 0.025,
-                }
-                : {
-                  latitude: 44.5638,
-                  longitude: -123.2794,
-                  latitudeDelta: 0.025,
-                  longitudeDelta: 0.025,
-                }}
+              initialRegion={
+                location
+                  ? {
+                      latitude: location.coords.latitude,
+                      longitude: location.coords.longitude,
+                      latitudeDelta: 0.025,
+                      longitudeDelta: 0.025,
+                    }
+                  : {
+                      latitude: 44.5638,
+                      longitude: -123.2794,
+                      latitudeDelta: 0.025,
+                      longitudeDelta: 0.025,
+                    }
+              }
               showsUserLocation={!!location}
               location={location}
               selectedLocation={selectedLocation}
@@ -289,11 +295,7 @@ export default function HomeScreen() {
             }
           }}
         >
-          <MaterialIcons
-            name="my-location"
-            size={24}
-            color="white"
-          />
+          <MaterialIcons name="my-location" size={24} color="white" />
         </TouchableOpacity>
       </View>
     </>
