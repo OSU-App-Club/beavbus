@@ -66,7 +66,6 @@ export default function HomeScreen() {
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
 
-  //FIXME: temporarily using 'bus.png' -> SVG's dont seem to work currently.
   const ctsRouteIcon = require("../assets/images/bus.png");
   const osuRouteIcon = require("../assets/images/bus.png");
 
@@ -126,7 +125,6 @@ export default function HomeScreen() {
       return {
         id: id,
         routeId: vehicle.RouteID,
-        fromService: vehicle.FromService,
         FromService: vehicle.FromService,
         coordinate: {
           latitude: vehicle.Latitude,
