@@ -14,15 +14,16 @@ const decodePolyline = (encoded: string) => {
             result |= (b & 0x1f) << shift;
             shift += 5;
         } while (b >= 0x20);
-        lat += ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lat += (result & 1) ? ~(result >> 1) : (result >> 1);
 
-        shift = 0; result = 0;
+        shift = 0;
+        result = 0;
         do {
             b = encoded.charCodeAt(index++) - 63;
             result |= (b & 0x1f) << shift;
             shift += 5;
         } while (b >= 0x20);
-        lng += ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lng += (result & 1) ? ~(result >> 1) : (result >> 1);
 
         points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
     }
@@ -30,27 +31,25 @@ const decodePolyline = (encoded: string) => {
 };
 
 interface Stop {
-    AddressID: number;
+    StopID: number;
     Latitude: number;
     Longitude: number;
-    Line1: string;
-    Line2: string;
     Description: string;
-    RouteID: number;
-    RouteStopID: number;
+    Bearing: number;
+    RoutesThatStopHere: number[];
     SecondsAtStop: number;
-    SecodnsToNextStop: number;
+    SecondsToNextStop: number;
     SignVerbiage: string;
 }
 
 interface Route {
-    Description: string,
-    ETATypeID: number,
-    MapLatitude: number,
-    MapLongitude: number,
-    MapLineColor: string,
-    StopTimesPDFLink: string,
-    Stops: Stop[]
+    Description: string;
+    ETATypeID: number;
+    MapLatitude: number;
+    MapLongitude: number;
+    MapLineColor: string;
+    StopTimesPDFLink: string;
+    Stops: Stop[];
     EncodedPolyline: string;
     linePoints?: { latitude: number; longitude: number }[];
 }
@@ -70,6 +69,13 @@ interface Vehicle {
 
 interface RoutesResult {
     routes: Route[] | null;
+    error: string | null;
+    loading: boolean;
+    refresh: () => Promise<void>;
+}
+
+interface StopsResult {
+    stops: Stop[];
     error: string | null;
     loading: boolean;
     refresh: () => Promise<void>;
@@ -149,20 +155,23 @@ export function getBeavBusRoutes(): RoutesResult {
             setError(null);
 
             const res = await fetch(
-                `${BASE_URL}/Services/JSONPRelay.svc/GetRoutesForMapWithScheduleWithEncodedLine?apiKey=${process.env.EXPO_PUBLIC_BEAV_BUS_API_KEY}`
+                `${BASE_URL}/Services/JSONPRelay.svc/GetRoutesForMapWithScheduleWithEncodedLine?apiKey=${process.env.EXPO_PUBLIC_BEAV_BUS_API_KEY}`,
             );
 
             const data: Route[] = await res.json();
 
-            const routesWithLines = data.map(route => ({
+            const routesWithLines = data.map((route) => ({
                 ...route,
-                linePoints: route.EncodedPolyline ? decodePolyline(route.EncodedPolyline) : []
+                linePoints: route.EncodedPolyline
+                    ? decodePolyline(route.EncodedPolyline)
+                    : [],
             }));
 
             setRoutes(routesWithLines);
-
-        }   catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to get location");
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Failed to get location",
+            );
         } finally {
             setLoading(false);
         }
@@ -198,7 +207,7 @@ export function getBeavBusVehiclePositions(): BeavBusVehiclePositionsResult {
             setError(null);
 
             const res = await fetch(
-                `${BASE_URL}/Services/JSONPRelay.svc/GetMapVehiclePoints?apiKey=${process.env.EXPO_PUBLIC_BEAV_BUS_API_KEY}`
+                `${BASE_URL}/Services/JSONPRelay.svc/GetMapVehiclePoints?apiKey=${process.env.EXPO_PUBLIC_BEAV_BUS_API_KEY}`,
             );
 
             const data: Vehicle[] = await res.json();
@@ -286,15 +295,75 @@ export function getCTSVehiclePositions(): CTSVehiclePositionsResult {
     };
 }
 
+export function getCTSBusStops(): StopsResult {
+    const [stops, setStops] = useState<Stop[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    const getStops = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const res = await fetch(
+                "https://corvallisbuswest.azurewebsites.net/api/static/",
+            );
+
+            const d = await res.json();
+            const stopObj = d.stops;
+            const data: Stop[] = [];
+
+            for (const key in stopObj) {
+                const rawStop = stopObj[key];
+
+                const stop: Stop = {
+                    Description: `Route ${rawStop.id}`,
+                    Latitude: rawStop.lat,
+                    Longitude: rawStop.lng,
+                    StopID: rawStop.id,
+                    Bearing: rawStop.bearing,
+                    SecondsAtStop: 0,
+                    SecondsToNextStop: 0,
+                    RoutesThatStopHere: rawStop.routeNames,
+                    SignVerbiage: rawStop.name,
+                };
+
+                data.push(stop);
+            }
+
+            setStops(data);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Failed to get CTS Stops",
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        getStops();
+    }, []);
+
+    return {
+        stops,
+        error,
+        loading,
+        refresh: getStops,
+    };
+}
+
 export function getBusRoutes(): RoutesResult {
     const ctsRoutes = getCTSBusRoutes();
     const beavBusRoutes = getBeavBusRoutes();
 
     let routes: Route[] = [];
-    if (ctsRoutes.routes)
-        routes = routes.concat(ctsRoutes.routes)
-    if (beavBusRoutes.routes)
-        routes = routes.concat(beavBusRoutes.routes)
+    if (ctsRoutes.routes) {
+        routes = routes.concat(ctsRoutes.routes);
+    }
+    if (beavBusRoutes.routes) {
+        routes = routes.concat(beavBusRoutes.routes);
+    }
 
     return {
         routes: routes,
@@ -304,6 +373,29 @@ export function getBusRoutes(): RoutesResult {
             ctsRoutes.refresh();
             beavBusRoutes.refresh();
             return;
-        }
+        },
+    };
+}
+
+export function getBusStops(): StopsResult {
+    const ctsStops = getCTSBusStops();
+    // const beavBusStops = getBeavBusRoutes();
+
+    let stops: Stop[] = [];
+    if (ctsStops.stops) {
+        stops = stops.concat(ctsStops.stops);
     }
-};
+    // if (beavBusStops.stops)
+    //     routes = routes.concat(beavBusStops.stops)
+
+    return {
+        stops: stops,
+        error: "",
+        loading: false,
+        refresh: async () => {
+            ctsStops.refresh();
+            // beavBusRoutes.refresh();
+            return;
+        },
+    };
+}
