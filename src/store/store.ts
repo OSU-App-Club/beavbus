@@ -1,22 +1,20 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
-  persistStore,
-  persistReducer,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
+  REHYDRATE,
 } from "redux-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import savedRoutesReducer from "./slices/savedRoutesSlice";
-import mapReducer from "./slices/mapSlice";
 
 const rootReducer = combineReducers({
   savedRoutes: savedRoutesReducer,
-  map: mapReducer,
 });
 
 const persistConfig = {

@@ -19,15 +19,12 @@ import {
   getCTSVehiclePositions,
   useLocation,
 } from "../hooks";
-import { useAppSelector } from "../store/hooks";
-import { selectUseLeafletMap } from "../store/slices/mapSlice";
 
 //add func to GET mapPin LongLat from MapPinContext
 import { useMapPin } from "../components/MapPinContext";
 
 export default function HomeScreen() {
   const mapRef = useRef<any>(null);
-  const useLeafletMap = useAppSelector(selectUseLeafletMap);
 
   //get the current state from selectLocation state variable (from context)
   const { selectedLocation } = useMapPin();
@@ -169,18 +166,12 @@ export default function HomeScreen() {
     <>
       <AlertsButton />
       <View style={styles.container}>
-        {(!location || error) && (
-          <ThemedText style={styles.warn}>
-            Warning: {error || "Unable to get location"}
-          </ThemedText>
-        )}
         {buses === null && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}
 
         {(() => {
-          const MapComponent =
-            (useLeafletMap ? LeafletMapView : MapView) as any;
+          const MapComponent = MapView as any;
           return (
             <MapComponent
               ref={mapRef}

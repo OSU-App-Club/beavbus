@@ -1,14 +1,14 @@
-import { ActivityIndicator, View, StyleSheet, useColorScheme } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ThemeProvider } from "expo-router";
+import { NativeTabs } from "expo-router/native-tabs";
 import { StatusBar } from "expo-status-bar";
+import { ActivityIndicator, StyleSheet, useColorScheme, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { ThemeProvider } from "expo-router";
-import { NativeTabs } from "expo-router/unstable-native-tabs";
 
-import { store, persistor } from "../store/store";
-import { darkTheme, lightTheme } from "../constants";
 import { MapPinProvider } from "../components/MapPinContext";
+import { darkTheme, lightTheme } from "../constants";
+import { persistor, store } from "../store/store";
 
 export default function RootLayout() {
   const scheme = useColorScheme();
