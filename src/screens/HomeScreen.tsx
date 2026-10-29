@@ -1,12 +1,12 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, {
   AnimatedRegion,
   Marker,
   MarkerAnimated,
   Polyline,
-  Region
+  Region,
 } from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
 import LeafletMapView from "../components/LeafletMapView";
@@ -101,11 +101,10 @@ export default function HomeScreen() {
     //Return only when BOTH sources fail
     if (!(beavBusVehicles || ctsVehicles)) return;
 
-    let vehicles =
-      beavBusVehicles?.map((v) => {
-        v.FromService = "OSU";
-        return v;
-      }) ?? [];
+    let vehicles = beavBusVehicles?.map((v) => {
+      v.FromService = "OSU";
+      return v;
+    }) ?? [];
     vehicles = vehicles.concat(
       ctsVehicles?.map((v) => {
         v.FromService = "CTS";
@@ -186,21 +185,19 @@ export default function HomeScreen() {
             <MapComponent
               ref={mapRef}
               style={styles.map}
-              initialRegion={
-                location
-                  ? {
-                      latitude: location.coords.latitude,
-                      longitude: location.coords.longitude,
-                      latitudeDelta: 0.025,
-                      longitudeDelta: 0.025,
-                    }
-                  : {
-                      latitude: 44.5638,
-                      longitude: -123.2794,
-                      latitudeDelta: 0.025,
-                      longitudeDelta: 0.025,
-                    }
-              }
+              initialRegion={location
+                ? {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                }
+                : {
+                  latitude: 44.5638,
+                  longitude: -123.2794,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                }}
               showsUserLocation={!!location}
               location={location}
               selectedLocation={selectedLocation}
@@ -228,7 +225,25 @@ export default function HomeScreen() {
                   image={bus.FromService === "OSU"
                     ? osuRouteIcon
                     : ctsRouteIcon}
-                />
+                >
+                  <View
+                    style={{
+                      width: 64,
+                      height: 64,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    collapsable={false}
+                  >
+                    <Image
+                      source={bus.FromService === "OSU"
+                        ? osuRouteIcon
+                        : ctsRouteIcon}
+                      style={{ width: markerSize * 2, height: markerSize * 2 }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </MarkerAnimated>
               ))}
               {drawableRoutes.map((route) => (
                 <Polyline
