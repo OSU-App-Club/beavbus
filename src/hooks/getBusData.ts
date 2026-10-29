@@ -36,7 +36,7 @@ interface Stop {
     Longitude: number;
     Description: string;
     Bearing: number;
-    RouteStopIDs: number[];
+    RoutesThatStopHere: number[];
     SecondsAtStop: number;
     SecondsToNextStop: number;
     SignVerbiage: string;
@@ -324,7 +324,7 @@ export function getCTSBusStops(): StopsResult {
                     Bearing: rawStop.bearing,
                     SecondsAtStop: 0,
                     SecondsToNextStop: 0,
-                    RouteStopIDs: rawStop.routeNames,
+                    RoutesThatStopHere: rawStop.routeNames,
                     SignVerbiage: rawStop.name,
                 };
 
