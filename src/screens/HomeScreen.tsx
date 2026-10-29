@@ -1,19 +1,21 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, {
   AnimatedRegion,
   Marker,
   MarkerAnimated,
   Polyline,
+  Region,
 } from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
+import LeafletMapView from "../components/LeafletMapView";
 import ThemedText from "../components/ThemedText";
 import ThemedView from "../components/ThemedView";
-import LeafletMapView from "../components/LeafletMapView";
 import {
   getBeavBusVehiclePositions,
   getBusRoutes,
+  getBusStops,
   getCTSVehiclePositions,
   useLocation,
 } from "../hooks";
@@ -57,17 +59,29 @@ export default function HomeScreen() {
     [],
   );
 
+  const BASE_SIZE = 12;
+  const BASE_ZOOM = 15;
+
   const { location, loading, error } = useLocation();
   const { vehicles: beavBusVehicles, refresh: beavBusRefresh } =
     getBeavBusVehiclePositions();
   const { vehicles: ctsVehicles, refresh: ctsRefresh } =
     getCTSVehiclePositions();
+  const { stops } = getBusStops();
   const { routes } = getBusRoutes();
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
+  const [markerSize, setMarkerSize] = useState(BASE_SIZE);
 
   const ctsRouteIcon = require("../assets/images/bus.png");
   const osuRouteIcon = require("../assets/images/bus.png");
+
+  function markerSizeFor(region: Region) {
+    const zoom = Math.log2(360 / region.longitudeDelta);
+    const size = BASE_SIZE * Math.pow(1.5, zoom - BASE_ZOOM);
+    // clamp, then snap to 4px steps so we don't re-render on every pinch frame
+    return Math.round(Math.min(64, Math.max(12, size)) / 4) * 4;
+  }
 
   //Update routes
   const drawableRoutes = useMemo(
@@ -79,7 +93,7 @@ export default function HomeScreen() {
           coordinates: route.linePoints || [],
         }))
         .filter((r) => r.coordinates.length > 1),
-    [routes]
+    [routes],
   );
 
   // Update bus coordinates
@@ -87,11 +101,10 @@ export default function HomeScreen() {
     //Return only when BOTH sources fail
     if (!(beavBusVehicles || ctsVehicles)) return;
 
-    let vehicles =
-      beavBusVehicles?.map((v) => {
-        v.FromService = "OSU";
-        return v;
-      }) ?? [];
+    let vehicles = beavBusVehicles?.map((v) => {
+      v.FromService = "OSU";
+      return v;
+    }) ?? [];
     vehicles = vehicles.concat(
       ctsVehicles?.map((v) => {
         v.FromService = "CTS";
@@ -166,34 +179,34 @@ export default function HomeScreen() {
         )}
 
         {(() => {
-          const MapComponent = (useLeafletMap ? LeafletMapView : MapView) as any;
+          const MapComponent =
+            (useLeafletMap ? LeafletMapView : MapView) as any;
           return (
             <MapComponent
               ref={mapRef}
               style={styles.map}
-              initialRegion={
-                location
-                  ? {
-                      latitude: location.coords.latitude,
-                      longitude: location.coords.longitude,
-                      latitudeDelta: 0.025,
-                      longitudeDelta: 0.025,
-                    }
-                  : {
-                      latitude: 44.5638,
-                      longitude: -123.2794,
-                      latitudeDelta: 0.025,
-                      longitudeDelta: 0.025,
-                    }
-              }
+              initialRegion={location
+                ? {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                }
+                : {
+                  latitude: 44.5638,
+                  longitude: -123.2794,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                }}
               showsUserLocation={!!location}
               location={location}
               selectedLocation={selectedLocation}
               buses={buses}
               routes={drawableRoutes}
-              stops={mockStops}
+              stops={stops}
               showsMyLocationButton={false}
               showsTraffic={true}
+              onRegionChange={(r: Region) => setMarkerSize(markerSizeFor(r))}
             >
               {selectedLocation && (
                 <Marker
@@ -209,8 +222,25 @@ export default function HomeScreen() {
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-                  image={bus.FromService === "OSU" ? osuRouteIcon : ctsRouteIcon}
-                />
+                >
+                  <View
+                    style={{
+                      width: 64,
+                      height: 64,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    collapsable={false}
+                  >
+                    <Image
+                      source={bus.FromService === "OSU"
+                        ? osuRouteIcon
+                        : ctsRouteIcon}
+                      style={{ width: markerSize * 2, height: markerSize * 2 }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </MarkerAnimated>
               ))}
               {drawableRoutes.map((route) => (
                 <Polyline
@@ -221,24 +251,35 @@ export default function HomeScreen() {
                   strokeWidth={4}
                 />
               ))}
-              {mockStops.map((stop) => (
+              {stops.map((stop) => (
                 <Marker
-                  key={stop.id}
+                  key={stop.StopID}
                   coordinate={{
-                    latitude: stop.latitude,
-                    longitude: stop.longitude,
+                    latitude: stop.Latitude,
+                    longitude: stop.Longitude,
                   }}
+                  anchor={{ x: 0.5, y: 0.5 }}
                 >
-                  <ThemedView
+                  <View
                     style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 8,
-                      backgroundColor: "rgb(219, 104, 10)",
-                      borderWidth: 1.5,
-                      borderColor: "black",
+                      width: 64,
+                      height: 64,
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
-                  />
+                    collapsable={false}
+                  >
+                    <ThemedView
+                      style={{
+                        width: markerSize,
+                        height: markerSize,
+                        backgroundColor: "rgb(219, 104, 10)",
+                        borderWidth: 1.5,
+                        borderColor: "black",
+                        borderRadius: 100,
+                      }}
+                    />
+                  </View>
                 </Marker>
               ))}
             </MapComponent>
