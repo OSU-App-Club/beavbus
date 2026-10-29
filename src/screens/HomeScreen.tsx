@@ -152,11 +152,6 @@ export default function HomeScreen() {
     <>
       <AlertsButton />
       <View style={styles.container}>
-        {(!location || error) && (
-          <ThemedText style={styles.warn}>
-            Warning: {error || "Unable to get location"}
-          </ThemedText>
-        )}
         {buses === null && (
           <ThemedText style={styles.warn}>No bus data available</ThemedText>
         )}

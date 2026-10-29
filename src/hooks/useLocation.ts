@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
+import { Alert } from "react-native";
 
 interface UseLocationResult {
   location: Location.LocationObject | null;
@@ -23,7 +24,10 @@ export function useLocation(): UseLocationResult {
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== "granted") {
-        setError("Location permission denied");
+        Alert.alert(
+          "Location Warning",
+          "Unable to determine your current location.",
+        );
         setLoading(false);
         return;
       }
@@ -36,13 +40,19 @@ export function useLocation(): UseLocationResult {
       } catch {
         currentLocation = await Location.getLastKnownPositionAsync();
         if (!currentLocation) {
-          setError("Unable to obtain current location");
+          Alert.alert(
+            "Location Warning",
+            "Unable to determine your current location.",
+          );
         }
       }
 
       setLocation(currentLocation);
     } catch {
-      setError("Unable to obtain current location");
+      Alert.alert(
+        "Location Warning",
+        "Unable to determine your current location.",
+      );
     } finally {
       setLoading(false);
     }
