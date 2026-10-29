@@ -222,9 +222,6 @@ export default function HomeScreen() {
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-                  image={bus.FromService === "OSU"
-                    ? osuRouteIcon
-                    : ctsRouteIcon}
                 >
                   <View
                     style={{
