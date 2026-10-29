@@ -10,22 +10,18 @@ import MapView, {
 import AlertsButton from "../components/AlertsButton";
 import ThemedText from "../components/ThemedText";
 import ThemedView from "../components/ThemedView";
-import LeafletMapView from "../components/LeafletMapView";
 import {
   getBeavBusVehiclePositions,
   getBusRoutes,
   getCTSVehiclePositions,
   useLocation,
 } from "../hooks";
-import { useAppSelector } from "../store/hooks";
-import { selectUseLeafletMap } from "../store/slices/mapSlice";
 
 //add func to GET mapPin LongLat from MapPinContext
 import { useMapPin } from "../components/MapPinContext";
 
 export default function HomeScreen() {
   const mapRef = useRef<any>(null);
-  const useLeafletMap = useAppSelector(selectUseLeafletMap);
 
   //get the current state from selectLocation state variable (from context)
   const { selectedLocation } = useMapPin();
@@ -166,7 +162,7 @@ export default function HomeScreen() {
         )}
 
         {(() => {
-          const MapComponent = (useLeafletMap ? LeafletMapView : MapView) as any;
+          const MapComponent = MapView as any;
           return (
             <MapComponent
               ref={mapRef}
