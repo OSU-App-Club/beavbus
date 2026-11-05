@@ -11,13 +11,13 @@ export default function FavoritesScreen() {
         <ScrollView>
             <ThemedView>
                 <ThemedText variant="title" style={styles.title}>Favorites</ThemedText>
-                <BusStop name="SEC"></BusStop>
+                {/* <BusStop name="SEC"></BusStop>
                 <BusStop name="MU"></BusStop>
                 <BusStop name="Austin"></BusStop>
                 <BusStop name="Sacket"></BusStop>
                 <BusStop name="Valley"></BusStop>
                 <BusStop name="Radiation Center"></BusStop>
-                <BusStop name="MU"></BusStop>
+                <BusStop name="MU"></BusStop> */}
             </ThemedView>
         </ScrollView>
     )
