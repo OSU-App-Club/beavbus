@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import { openBrowserAsync } from 'expo-web-browser';
+import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 async function openAlerts() {
@@ -16,14 +17,16 @@ async function openAlerts() {
 
 function AlertsButton() {
     const insets = useSafeAreaInsets();
-    const bottomPosition = Platform.select({
+    const isDuo = useVerticalBarEdgeIOS() != null;
+    const bottomPosition = isDuo ? 24 : Platform.select({
         ios: Math.max(insets.bottom, 80),
         android: 20,
         default: 20,
     });
+    const rightPosition = isDuo ? 90 : 20;
 
     return (
-        <View style={[styles.alertsContainer, { bottom: bottomPosition }]}>
+        <View style={[styles.alertsContainer, { bottom: bottomPosition, right: rightPosition }]}>
             <Pressable onPress={openAlerts}>
                 <Ionicons name="warning-outline" style={styles.alertsIcon} />
             </Pressable>
