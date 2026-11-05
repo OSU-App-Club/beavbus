@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { TextInput, StyleSheet, View, Button } from "react-native";
-import { borderRadius, spacing, darkTheme } from "../constants";
 import { useTheme } from "expo-router/react-navigation";
+import { useEffect, useState } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+import { borderRadius, darkTheme, spacing } from "../constants";
 import { getLocations, LocationResult } from "../scripts/onSearch";
 import SearchResults from "./SearchResults";
 
@@ -17,7 +17,7 @@ export default function SearchBar() {
         const result = await getLocations(text);
         setLocations(result || []); //set the locations state variable with result
       } else {
-        setLocations([]); 
+        setLocations([]);
       }
     }, 300); // debounce delay in ms
     return () => clearTimeout(debounce);
@@ -29,7 +29,7 @@ export default function SearchBar() {
         style={[
           styles.input,
           locations.length > 0 ? styles.inputHasText : styles.inputNoText,
-          { color: colors.text, backgroundColor: colors.background },
+          { color: colors.text, backgroundColor: colors.background, fontSize: 20, paddingLeft: 20 },
         ]}
         onChangeText={onChangeText}
         value={text}
@@ -44,7 +44,7 @@ export default function SearchBar() {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    width: "85%",
+    flex: 1,
     gap: 20,
   },
   input: {

@@ -36,17 +36,6 @@ export default function SettingsScreen() {
           value={isToggle2enabled}
         />
       </View>
-
-
-      <ThemedText style={styles.settings} variant="title">Analytics:</ThemedText>
-      <View style={styles.row}>
-        <ThemedText>Report my usage to Google Analytics</ThemedText>
-        <ThemedSwitch
-          onValueChange={reportAnalytics}
-          value={isToggle3enabled}
-        />
-      </View>
-
     </ThemedView>
   );
 }
@@ -68,7 +57,6 @@ const styles = StyleSheet.create({
   },
 
   settings: {
-    paddingTop: 24,
     paddingBottom: 10,
   }
 });
