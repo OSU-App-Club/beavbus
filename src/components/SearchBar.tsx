@@ -40,8 +40,8 @@ export default function SearchBar() {
       <TextInput
         style={[
           styles.input,
-          showResults ? styles.inputHasText : styles.inputNoText,
-          { color: colors.text, backgroundColor: colors.background },
+          locations.length > 0 ? styles.inputHasText : styles.inputNoText,
+          { color: colors.text, backgroundColor: colors.background, fontSize: 20, paddingLeft: 20 },
         ]}
         onChangeText={(value) => {
           onChangeText(value);

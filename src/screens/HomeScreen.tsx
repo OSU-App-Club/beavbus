@@ -9,7 +9,6 @@ import MapView, {
   Region,
 } from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
-import LeafletMapView from "../components/LeafletMapView";
 import ThemedText from "../components/ThemedText";
 import ThemedView from "../components/ThemedView";
 import {
@@ -22,6 +21,7 @@ import {
 
 //add func to GET mapPin LongLat from MapPinContext
 import { useMapPin } from "../components/MapPinContext";
+import BusStop from "../components/BusStop";
 
 export default function HomeScreen() {
   const mapRef = useRef<any>(null);
@@ -176,19 +176,21 @@ export default function HomeScreen() {
             <MapComponent
               ref={mapRef}
               style={styles.map}
-              initialRegion={location
-                ? {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                  latitudeDelta: 0.025,
-                  longitudeDelta: 0.025,
-                }
-                : {
-                  latitude: 44.5638,
-                  longitude: -123.2794,
-                  latitudeDelta: 0.025,
-                  longitudeDelta: 0.025,
-                }}
+              initialRegion={
+                location
+                  ? {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
+                  }
+                  : {
+                    latitude: 44.5638,
+                    longitude: -123.2794,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
+                  }
+              }
               showsUserLocation={!!location}
               location={location}
               selectedLocation={selectedLocation}
@@ -243,35 +245,7 @@ export default function HomeScreen() {
                 />
               ))}
               {stops.map((stop) => (
-                <Marker
-                  key={stop.StopID}
-                  coordinate={{
-                    latitude: stop.Latitude,
-                    longitude: stop.Longitude,
-                  }}
-                  anchor={{ x: 0.5, y: 0.5 }}
-                >
-                  <View
-                    style={{
-                      width: 64,
-                      height: 64,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    collapsable={false}
-                  >
-                    <ThemedView
-                      style={{
-                        width: markerSize,
-                        height: markerSize,
-                        backgroundColor: "rgb(219, 104, 10)",
-                        borderWidth: 1.5,
-                        borderColor: "black",
-                        borderRadius: 100,
-                      }}
-                    />
-                  </View>
-                </Marker>
+                <BusStop stop={stop} key={stop.StopID} onClickStop={() => {}} markerSize={markerSize}/>
               ))}
             </MapComponent>
           );
