@@ -253,7 +253,7 @@ export default function HomeScreen() {
                 />
               ))}
               {stops.map((stop) => (
-                <BusStop stop={stop} onClickStop={() => {}} markerSize={markerSize}/>
+                <BusStop stop={stop} key={stop.StopID} onClickStop={() => {}} markerSize={markerSize}/>
               ))}
             </MapComponent>
           );
