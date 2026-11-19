@@ -9,7 +9,6 @@ import MapView, {
   Region,
 } from "react-native-maps";
 import AlertsButton from "../components/AlertsButton";
-import LeafletMapView from "../components/LeafletMapView";
 import ThemedText from "../components/ThemedText";
 import ThemedView from "../components/ThemedView";
 import {
@@ -176,19 +175,21 @@ export default function HomeScreen() {
             <MapComponent
               ref={mapRef}
               style={styles.map}
-              initialRegion={location
-                ? {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                  latitudeDelta: 0.025,
-                  longitudeDelta: 0.025,
-                }
-                : {
-                  latitude: 44.5638,
-                  longitude: -123.2794,
-                  latitudeDelta: 0.025,
-                  longitudeDelta: 0.025,
-                }}
+              initialRegion={
+                location
+                  ? {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
+                  }
+                  : {
+                    latitude: 44.5638,
+                    longitude: -123.2794,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
+                  }
+              }
               showsUserLocation={!!location}
               location={location}
               selectedLocation={selectedLocation}
