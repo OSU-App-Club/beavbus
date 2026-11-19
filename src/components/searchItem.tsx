@@ -1,8 +1,8 @@
-import { Text, StyleSheet, Pressable, Keyboard } from "react-native";
-import { LocationResult } from "../scripts/onSearch";
-import { darkTheme } from "../constants/theme";
-import { useMapPin } from "../components/MapPinContext"; //import context file
 import { Dispatch, SetStateAction } from "react";
+import { Keyboard, Pressable, StyleSheet, Text } from "react-native";
+import { useMapPin } from "../components/MapPinContext"; //import context file
+import { darkTheme } from "../constants/theme";
+import { LocationResult } from "../scripts/onSearch";
 
 interface props {
   item: LocationResult;
