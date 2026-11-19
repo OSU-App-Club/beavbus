@@ -69,6 +69,8 @@ export default function HomeScreen() {
   const busCoordsRef = useRef<Record<string, any>>({});
   const [markerSize, setMarkerSize] = useState(BASE_SIZE);
 
+  const [visibleRouteLine, setVisibleRouteLine] = useState<any[]>() //FIXME 
+
   const ctsRouteIcon = require("../assets/images/bus.png");
   const osuRouteIcon = require("../assets/images/bus.png");
 
@@ -89,7 +91,7 @@ export default function HomeScreen() {
           coordinates: route.linePoints || [],
         }))
         .filter((r) => r.coordinates.length > 1),
-    [routes],
+    [routes, visibleRouteLine], //useMemo reacts (runs inner code) when anything in this array changes
   );
 
   // Update bus coordinates
@@ -214,6 +216,8 @@ export default function HomeScreen() {
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
+                  //onPress={e => console.log(e.nativeEvent, bus.RouteID)} //fixme 
+                  onPress={setVisibleRouteLine(bus.RouteID)}
                 >
                   <View
                     style={{
