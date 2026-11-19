@@ -30,7 +30,7 @@ const decodePolyline = (encoded: string) => {
     return points;
 };
 
-interface Stop {
+export interface Stop {
     StopID: number;
     Latitude: number;
     Longitude: number;
