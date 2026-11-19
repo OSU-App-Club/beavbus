@@ -79,8 +79,8 @@ export default function HomeScreen() {
     return Math.round(Math.min(64, Math.max(12, size)) / 4) * 4;
   }
 
-  //Update routes
-  const drawableRoutes = useMemo(
+  //Creating drawableRoutes with just the data needed for drawing
+  const drawableRoutes = useMemo( //useMemo to only re-run when new routes, instead of each render 
     () =>
       (routes ?? [])
         .map((route, index) => ({
@@ -210,7 +210,7 @@ export default function HomeScreen() {
                 />
               )}
               {/* eslint-disable-next-line react-hooks/refs */}
-              {buses.map((bus) => (
+              {buses.map((bus) => ( //buses drawn FINDME
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
@@ -234,7 +234,7 @@ export default function HomeScreen() {
                   </View>
                 </MarkerAnimated>
               ))}
-              {drawableRoutes.map((route) => (
+              {drawableRoutes.map((route) => ( //drawing of polylines FINDME
                 <Polyline
                   key={route.key}
                   coordinates={route.coordinates}
