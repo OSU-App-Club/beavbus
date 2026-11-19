@@ -9,19 +9,31 @@ import SearchResults from "./SearchResults";
 export default function SearchBar() {
   const [text, onChangeText] = useState("");
   const [locations, setLocations] = useState<LocationResult[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
   const { colors } = useTheme();
 
   useEffect(() => {
+    let cancelled = false;
+
     const debounce = setTimeout(async () => {
       if (text.length > 2) {
         const result = await getLocations(text);
+        if (cancelled) return;
         setLocations(result || []); //set the locations state variable with result
+        setIsOpen(true);
       } else {
-        setLocations([]);
+        setLocations([]); 
+        setIsOpen(false);
       }
     }, 300); // debounce delay in ms
-    return () => clearTimeout(debounce);
+    
+    return () => {
+      cancelled = true;
+      clearTimeout(debounce);
+    }
   }, [text]);
+
+  const showResults = isOpen && locations.length > 0;
 
   return (
     <View style={styles.container}>
@@ -31,12 +43,28 @@ export default function SearchBar() {
           locations.length > 0 ? styles.inputHasText : styles.inputNoText,
           { color: colors.text, backgroundColor: colors.background, fontSize: 20, paddingLeft: 20 },
         ]}
-        onChangeText={onChangeText}
+        onChangeText={(value) => {
+          onChangeText(value);
+          if (value.length > 2) {
+            setIsOpen(true);
+          }
+        }}
+        onFocus={() => {
+          if (locations.length > 0) {
+            setIsOpen(true);
+          }
+        }}
         value={text}
-        placeholder={"Search for a location..."}
+        placeholder="Search for a location..."
       />
-      {/* pass locations result to component */}
-      <SearchResults locations={locations} onChangeText={onChangeText} />
+
+      {showResults && (
+        <SearchResults
+          locations={locations}
+          onChangeText={onChangeText}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
     </View>
   );
 }
@@ -44,7 +72,9 @@ export default function SearchBar() {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    flex: 1,
+    width: "85%",
+    zIndex: 20,
+    elevation: 20,
     gap: 20,
   },
   input: {
@@ -53,6 +83,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderColor: darkTheme.colors.border,
+    zIndex: 2,
+    elevation: 2,
   },
   inputHasText: {
     borderTopLeftRadius: 25,
