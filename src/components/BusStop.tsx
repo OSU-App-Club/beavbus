@@ -1,23 +1,18 @@
-import {Text, View, Pressable, StyleSheet} from "react-native";
-import { useTheme } from "expo-router/react-navigation";
+import {View, Pressable, StyleSheet} from "react-native";
 import ThemedText from "./ThemedText";
 import ThemedView from "./ThemedView";
-import { borderRadius } from "../constants";
 
+type BusStopProps = {
+    stop: { name: string, favorited: boolean, id: string },
+    onFavorite(): void
+}
 
-
-function BusStop({name}: {name: string}) {
-    const { colors } = useTheme();
+function BusStop({ stop, onFavorite }: BusStopProps) {
     return(
         <ThemedView style={styles.card}>
-            <ThemedText style={styles.subcard}> {name}</ThemedText>
-            <Pressable onPress={() => {}}
-            style={ ({pressed}) => [styles.button,
-                {
-                    backgroundColor: pressed? colors.busStopCardBgPressed : colors.busStopCardBg
-                }]
-            }>
-            
+            <Pressable style={styles.subcard} onPress={onFavorite}>
+                <ThemedText style={styles.subcard}>{stop.name}</ThemedText>
+                <View style={[styles.favorite, stop.favorited && styles.favorited]}/>
             </Pressable>
         </ThemedView>
     )
@@ -25,14 +20,29 @@ function BusStop({name}: {name: string}) {
 
 const styles = StyleSheet.create({
     card: {
-        display: 'flex',
         flexDirection: 'row',
-
+        alignItems: 'center',
+        backgroundColor: '#2B2B2F',
+        padding: 20,
+        borderRadius: 12,
+        marginBottom: 10,
     },
     subcard: {
-        width: 250,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
     },
-    
+    favorite: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 2,
+        borderColor: '#E8782A',
+    },
+    favorited: {
+        backgroundColor: '#E8782A',
+    },
     button: {
         width: 100,
         margin: 10,
