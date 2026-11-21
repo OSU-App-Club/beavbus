@@ -68,8 +68,7 @@ export default function HomeScreen() {
   const [buses, setBuses] = useState<any[]>([]);
   const busCoordsRef = useRef<Record<string, any>>({});
   const [markerSize, setMarkerSize] = useState(BASE_SIZE);
-
-  const [visibleRouteLine, setVisibleRouteLine] = useState<any[]>() //FIXME 
+  const [visibleRouteLine, setVisibleRouteLine] = useState<string | null>(null) //null = nothing tapped, show every route
 
   const ctsRouteIcon = require("../assets/images/bus.png");
   const osuRouteIcon = require("../assets/images/bus.png");
@@ -81,17 +80,18 @@ export default function HomeScreen() {
     return Math.round(Math.min(64, Math.max(12, size)) / 4) * 4;
   }
 
-  //Creating drawableRoutes with just the data needed for drawing
-  const drawableRoutes = useMemo( //useMemo to only re-run when new routes, instead of each render 
+  //Make `drawableRoutes` with only the data needed for drawing polylines
+  const drawableRoutes = useMemo( 
     () =>
       (routes ?? [])
+        .filter((route) => visibleRouteLine === null || visibleRouteLine === route.id) //filter to only show routes which are tapped 
         .map((route, index) => ({
-          key: `${route.Description}-${index}`,
+          key: `${route.Description}-${index}`, //TODO: can later make this simply `route.id`
           color: route.MapLineColor || "#000000",
           coordinates: route.linePoints || [],
         }))
-        .filter((r) => r.coordinates.length > 1),
-    [routes, visibleRouteLine], //useMemo reacts (runs inner code) when anything in this array changes
+        .filter((r) => r.coordinates.length > 1), //filter out any route with less than 2 line points (undrawable) 
+    [routes, visibleRouteLine],
   );
 
   // Update bus coordinates
@@ -212,12 +212,11 @@ export default function HomeScreen() {
                 />
               )}
               {/* eslint-disable-next-line react-hooks/refs */}
-              {buses.map((bus) => ( //buses drawn FINDME
+              {buses.map((bus) => (
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-                  //onPress={e => console.log(e.nativeEvent, bus.RouteID)} //fixme 
-                  onPress={setVisibleRouteLine(bus.RouteID)}
+                  onPress={() => setVisibleRouteLine(bus.routeID)}
                 >
                   <View
                     style={{
@@ -238,7 +237,7 @@ export default function HomeScreen() {
                   </View>
                 </MarkerAnimated>
               ))}
-              {drawableRoutes.map((route) => ( //drawing of polylines FINDME
+              {drawableRoutes.map((route) => ( 
                 <Polyline
                   key={route.key}
                   coordinates={route.coordinates}
