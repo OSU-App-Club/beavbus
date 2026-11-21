@@ -177,6 +177,7 @@ export default function HomeScreen() {
             <MapComponent
               ref={mapRef}
               style={styles.map}
+              onPress={() => setVisibleRouteLine(null)}
               initialRegion={
                 location
                   ? {
@@ -216,7 +217,7 @@ export default function HomeScreen() {
                 <MarkerAnimated
                   key={bus.id}
                   coordinate={busCoordsRef.current[bus.id] || bus.coordinate}
-                  onPress={() => setVisibleRouteLine(bus.routeID)}
+                  onPress={() => setVisibleRouteLine(bus.routeId)}
                 >
                   <View
                     style={{
